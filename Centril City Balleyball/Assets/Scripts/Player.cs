@@ -5,13 +5,16 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     Rigidbody2D rb;
-    private Vector3 position;
-    private float xVelocity;
 
-    public float speed = .025f;
-    public float jump = 20;
+    public float runSpd = 100;
+    public const string RIGHT = "right";
+    public const string LEFT = "left";
+    public string runPressed;
 
-    bool airborne;
+    public float jumpSpd = 20;
+    public bool jumpPressed = false;
+
+    public bool airborne;
 
     private void Start()
     {
@@ -21,26 +24,46 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Update position
-        position = transform.position;
-
-        // Reset velocity before checking presses
-        xVelocity = 0;
-
-        // change velocity if direction key is pressed
-        if (Input.GetKey(KeyCode.A))
-            xVelocity = -speed * .75f;
+        // Check which run buttons are pressed
         if (Input.GetKey(KeyCode.D))
-            xVelocity = speed;
+        {
+            runPressed = RIGHT;
 
-        // Add velocity to position
-        position.x += xVelocity;
+            // Null if both keys are pressed
+            if (Input.GetKey(KeyCode.A))
+                runPressed = null;
+        }
+        else if (Input.GetKey(KeyCode.A))
+            runPressed = LEFT;
+        else
+            runPressed = null;
 
-        // Move the vehicle to its new position
-        transform.position = position;
-
+        // Check if jump is initiated
         if (Input.GetKeyDown(KeyCode.Space) && !airborne)
-            rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y + jump, 0);
+            jumpPressed = true;
+
+        Debug.Log("hello");
+    }
+
+    private void FixedUpdate()
+    {
+        if (runPressed == RIGHT)
+        {
+            rb.AddForce(new Vector2(runSpd, 0), ForceMode2D.Impulse);
+        }
+        else if (runPressed == LEFT)
+        {
+            rb.AddForce(new Vector2(-runSpd, 0), ForceMode2D.Impulse);
+        }
+        else
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        }
+
+        
+
+        if (jumpPressed)
+            rb.AddForce(new Vector2(0, jumpSpd), ForceMode2D.Impulse);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

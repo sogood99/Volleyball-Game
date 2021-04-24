@@ -214,12 +214,12 @@ PrefabInstance:
     - target: {fileID: 1096307441060309455, guid: 3f8e9dd05f8fcf948b6c765d9e3b4f5a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.04
+      value: 5.49
       objectReference: {fileID: 0}
     - target: {fileID: 1096307441060309455, guid: 3f8e9dd05f8fcf948b6c765d9e3b4f5a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.47
+      value: 2.63
       objectReference: {fileID: 0}
     - target: {fileID: 1096307441060309455, guid: 3f8e9dd05f8fcf948b6c765d9e3b4f5a,
         type: 3}
@@ -283,7 +283,7 @@ PrefabInstance:
     - target: {fileID: 3684222183370361312, guid: 5e914edcac88aa943be656966a5d4a1d,
         type: 3}
       propertyPath: m_Name
-      value: Floor (1)
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 3684222183370361316, guid: 5e914edcac88aa943be656966a5d4a1d,
         type: 3}
@@ -372,7 +372,7 @@ PrefabInstance:
     - target: {fileID: 3684222183370361312, guid: 5e914edcac88aa943be656966a5d4a1d,
         type: 3}
       propertyPath: m_Name
-      value: Floor (2)
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 3684222183370361316, guid: 5e914edcac88aa943be656966a5d4a1d,
         type: 3}
@@ -476,12 +476,12 @@ PrefabInstance:
     - target: {fileID: 2197792419713147918, guid: 7bc14a1c91cf0b74eb3f4a9abe930548,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.41
+      value: -4.78
       objectReference: {fileID: 0}
     - target: {fileID: 2197792419713147918, guid: 7bc14a1c91cf0b74eb3f4a9abe930548,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.83
+      value: -0.25
       objectReference: {fileID: 0}
     - target: {fileID: 2197792419713147918, guid: 7bc14a1c91cf0b74eb3f4a9abe930548,
         type: 3}
@@ -533,6 +533,16 @@ PrefabInstance:
       propertyPath: mainCam
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 8779486132250751358, guid: 7bc14a1c91cf0b74eb3f4a9abe930548,
+        type: 3}
+      propertyPath: runSpd
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8779486132250751358, guid: 7bc14a1c91cf0b74eb3f4a9abe930548,
+        type: 3}
+      propertyPath: jumpSpd
+      value: 500
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7bc14a1c91cf0b74eb3f4a9abe930548, type: 3}
 --- !u!1001 &3684222183428000409
