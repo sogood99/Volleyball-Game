@@ -39,8 +39,6 @@ public class Player : MonoBehaviour
         // Move the vehicle to its new position
         transform.position = position;
 
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-
         if (Input.GetKeyDown(KeyCode.Space) && !airborne)
             rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y + jump, 0);
     }
