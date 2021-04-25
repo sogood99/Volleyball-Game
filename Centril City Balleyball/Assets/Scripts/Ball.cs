@@ -16,7 +16,13 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Clamp the velocity
+
+    }
+
+    // Put all of the rigidbody stuff in here
+    private void FixedUpdate()
+    {
+        // Clamp the velocity magnitude
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpd);
     }
 }
