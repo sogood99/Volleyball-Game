@@ -207,9 +207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 544828542889e954a9a49983c2372ec4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ball: {fileID: 0}
   runSpd: 15
-  runPressed: 
-  prevRun: 
   jumpSpd: 25
-  jumpPressed: 0
-  airborne: 0

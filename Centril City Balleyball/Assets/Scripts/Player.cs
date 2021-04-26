@@ -4,23 +4,28 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    Rigidbody2D rb;
+    public GameObject ball;
+
+    private Rigidbody2D rb;
 
     public float runSpd = 15;
-    public const string RIGHT = "right";
-    public const string LEFT = "left";
-    public string runPressed;
-    public string prevRun;
+
+    private const string RIGHT = "right";
+    private const string LEFT = "left";
+    private string runPressed;
+    private string prevRun;
 
     public float jumpSpd = 25;
-    public bool jumpPressed = false;
+    private bool jumpPressed = false;
 
-    public bool airborne;
+    private bool airborne;
 
     // Start is called before the first frame update
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
+        Physics2D.IgnoreCollision(ball.GetComponent<Collider2D>(), GetComponent<Collider2D>());
     }
 
     // Update is called once per frame
@@ -83,8 +88,6 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.name == "Floor")
             airborne = false;
-        if (collision.gameObject.name == "Wall")
-            rb.velocity = new Vector2(0, rb.velocity.y);
     }
 
     private void OnCollisionExit2D(Collision2D collision)

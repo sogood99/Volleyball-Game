@@ -5,9 +5,10 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     private Rigidbody2D rb;
+
     public float maxSpd = 70;
 
-    public Transform sprite;
+    private Transform sprite;
     private Vector2 direction;
 
     // Start is called before the first frame update
