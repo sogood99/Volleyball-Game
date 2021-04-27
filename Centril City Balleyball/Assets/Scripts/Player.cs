@@ -89,9 +89,27 @@ public class Player : MonoBehaviour
             }
         }
 
-        // Add to hitTimer if necessary
+        // If currently hitting
         if (hitting != -1)
         {
+            // If airborne and hit type disagree, fix it
+            if (airborne && hitting <= 1)
+            {
+                // Swap from a grounded hit to its respective arial hit
+                hitBoxes[hitting].enabled = false;
+                hitBoxes[hitting + 2].enabled = true;
+                hitting += 2;
+            }
+            else if (!airborne && hitting >= 2)
+            {
+                // Swap from an arial hit to its respective grounded hit
+                hitBoxes[hitting].enabled = false;
+                hitBoxes[hitting - 2].enabled = true;
+                hitting -= 2;
+            }
+
+
+            // Add to hitTimer if necessary
             hitTimer += Time.deltaTime;
 
             // End the hit when necessary
