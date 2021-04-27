@@ -19,6 +19,9 @@ public class Player : MonoBehaviour
     private bool jumpPressed = false;
 
     public SpriteRenderer[] hitBoxes;
+    private int hitting = -1;
+    public float hitDuration = .5f;
+    private float hitTimer;
 
     private bool airborne;
 
@@ -68,13 +71,39 @@ public class Player : MonoBehaviour
 
 
         // Check for hit keys pressed
-        if (Input.GetKeyDown(KeyCode.W))
-            hitBoxes[0].enabled = true;
-        else if (Input.GetKeyDown(KeyCode.S))
-            hitBoxes[1].enabled = true;
+        if (hitting == -1)
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                if (airborne)
+                { hitBoxes[2].enabled = true; hitting = 2; }
+                else
+                { hitBoxes[0].enabled = true; hitting = 0; }
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                if (airborne)
+                { hitBoxes[3].enabled = true; hitting = 3; }
+                else
+                { hitBoxes[1].enabled = true; hitting = 1; }
+            }
+        }
 
+        // Add to hitTimer if necessary
+        if (hitting != -1)
+        {
+            hitTimer += Time.deltaTime;
 
+            // End the hit when necessary
+            if (hitTimer >= hitDuration)
+            {
+                hitTimer = 0;
 
+                hitBoxes[hitting].enabled = false;
+
+                hitting = -1;
+            }
+        }
     }
 
     // Put all of the rigidbody stuff in here
