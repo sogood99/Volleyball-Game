@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     public float jumpSpd = 25;
     private bool jumpPressed = false;
 
+    public SpriteRenderer[] hitBoxes;
+
     private bool airborne;
 
     // Start is called before the first frame update
@@ -62,6 +64,17 @@ public class Player : MonoBehaviour
         // Check if jump is initiated
         if (Input.GetKeyDown(KeyCode.Space) && !airborne)
             jumpPressed = true;
+
+
+
+        // Check for hit keys pressed
+        if (Input.GetKeyDown(KeyCode.W))
+            hitBoxes[0].enabled = true;
+        else if (Input.GetKeyDown(KeyCode.S))
+            hitBoxes[1].enabled = true;
+
+
+
     }
 
     // Put all of the rigidbody stuff in here
