@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public GameObject ball;
+    public Ball ball;
+    public Rigidbody2D ballRb;
 
     private Rigidbody2D rb;
 
@@ -12,8 +13,11 @@ public class Player : MonoBehaviour
 
     private const string RIGHT = "right";
     private const string LEFT = "left";
+
     private string runPressed;
     private string prevRun;
+
+    public bool leftSide;
 
     public float jumpSpd = 40;
     private bool jumpPressed = false;
@@ -28,6 +32,8 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        ball = GameObject.Find("Ball").GetComponent<Ball>();
+        ballRb = ball.GetComponent<Rigidbody2D>();
         rb = GetComponent<Rigidbody2D>();
         
         Physics2D.IgnoreCollision(ball.GetComponent<Collider2D>(), GetComponent<Collider2D>());

@@ -6,10 +6,12 @@ public class Ball : MonoBehaviour
 {
     private Rigidbody2D rb;
 
-    public float maxSpd = 70;
+    public float maxSpd = 150;
 
     private Transform sprite;
     private Vector2 direction;
+
+    public bool hitGround = false;
 
     // Start is called before the first frame update
     void Start()
@@ -46,4 +48,22 @@ public class Ball : MonoBehaviour
         // Clamp the velocity magnitude
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpd);
     }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Floor")
+        {
+            hitGround = true;
+            sprite.GetComponent<SpriteRenderer>().color = Color.gray;
+            sprite.position = new Vector3(sprite.position.x, sprite.position.y, 4.5f);
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Floor" && hitGround)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+    }
+
 }

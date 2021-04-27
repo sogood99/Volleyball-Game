@@ -5,7 +5,6 @@ using UnityEngine;
 public class Hitbox : MonoBehaviour
 {
     public Player player;
-    public Ball ball;
     private bool sameHit = false;
 
     public Vector2 floorPos;
@@ -23,11 +22,10 @@ public class Hitbox : MonoBehaviour
     {
         floorPos = Vector2.zero;
         airPos = Vector2.zero;
-        ball = null;
     }
 
     // Parameterized constructor
-    public Hitbox(int type, Ball ball = null)
+    public Hitbox(int type)
     {
         if (type == 0)
         {
@@ -57,23 +55,19 @@ public class Hitbox : MonoBehaviour
             airPos = Vector2.zero;
             duration = 0f;
         }
-
-        this.ball = ball;
     }
 
     // VERY parameterized constructor
-    public Hitbox(Vector2 floorPos, Vector2 airPos, float duration, Ball ball = null)
+    public Hitbox(Vector2 floorPos, Vector2 airPos, float duration)
     {
         this.floorPos = floorPos;
         this.airPos = airPos;
         this.duration = duration;
-        this.ball = ball;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
@@ -96,6 +90,7 @@ public class Hitbox : MonoBehaviour
             {
                 timer = 0;
                 active = false;
+                sameHit = false;
 
                 // Disable the sprite (for debugging)
                 GetComponent<SpriteRenderer>().enabled = false;
@@ -108,25 +103,61 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collider)
     {
-        if (active && !sameHit && collider.gameObject == ball.gameObject)
+        if (active && collider.gameObject == player.ballRb.gameObject)
+            if (!sameHit && !player.ball.hitGround)
         {
-            // Eventually these should be more complex algorithms
+            // Figure out the direction the ball should be hit
+            int returnDirection = 1;
+            if (!player.leftSide)
+                returnDirection = -1;
+
+            // Initialize return variables
+            Vector2 angle = Vector2.zero;
+            Vector2 trajectory = Vector2.zero;
+
+            // Calculate income variables
+            Vector2 impactAngle = player.ballRb.velocity.normalized;
+            float impactMag = player.ballRb.velocity.magnitude;
+            float magScale = impactMag / player.ball.maxSpd;
+
+            // Figure out how the ball should be returned
             if (type == 0)
-                ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 60), ForceMode2D.Impulse);
+            {
+                if (player.GetComponent<Rigidbody2D>().velocity.x < 0)
+                    angle = new Vector2(-.1f, 1).normalized;
+                else if (player.GetComponent<Rigidbody2D>().velocity.x == 0)
+                    angle = new Vector2(0, 1).normalized;
+                else
+                    angle = new Vector2(.2f, 1).normalized;
+
+                // Return velocity magnitude ranges from .4 -> .9 of maxSpd
+                trajectory = angle * (player.ball.maxSpd * .4f) * (1 + (magScale * .5f));
+            }
             else if (type == 1)
-                ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(30, 30), ForceMode2D.Impulse);
+            {
+                if (player.GetComponent<Rigidbody2D>().velocity.x < 0)
+                    angle = new Vector2(1, 1.7f).normalized;
+                else if (player.GetComponent<Rigidbody2D>().velocity.x == 0)
+                    angle = new Vector2(1, 1.2f).normalized;
+                else
+                    angle = new Vector2(1, .7f).normalized;
+
+                // Return velocity magnitude ranges from .5 -> .8 of maxSpd
+                trajectory = angle * (player.ball.maxSpd * .5f) * (1 + (magScale * .3f));
+            }
             else if (type == 2)
-                ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(40, -10), ForceMode2D.Impulse);
+            {
+                angle = new Vector2(1, -1.4f).normalized;
+
+                // Return velocity magnitude is .9 of maxSpd
+                trajectory = angle * (player.ball.maxSpd * .9f);
+            }
+
+            player.ballRb.velocity = new Vector2(trajectory.x * returnDirection, trajectory.y);
 
             // This makes sure a hitbox only acts once
             sameHit = true;
         }
-    }
-
-    private void OnTriggerExit2D(Collider2D collider)
-    {
-        if (active && collider.gameObject == ball.gameObject)
-            sameHit = false;
     }
 
     // Change position if it doesn't fit with player
