@@ -76,37 +76,33 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                if (airborne)
-                { hitBoxes[2].enabled = true; hitIndex = 2; }
-                else
-                { hitBoxes[0].enabled = true; hitIndex = 0; }
+                // Activate a defensive hit 
+                hitIndex = 0;
+                hitBoxes[hitIndex].enabled = true;
             }
             else if (Input.GetKeyDown(KeyCode.S))
             {
-                if (airborne)
-                { hitBoxes[3].enabled = true; hitIndex = 3; }
-                else
-                { hitBoxes[1].enabled = true; hitIndex = 1; }
+                // Activate an offensive hit
+                hitIndex = 1;
+                hitBoxes[hitIndex].enabled = true;
             }
         }
 
         // If currently hitting
         if (hitIndex != -1)
         {
-            // If airborne and hit type disagree, fix it
-            if (airborne && hitIndex <= 1)
+            // Always make sure player and hit positions agree
+            if (airborne && hitBoxes[0].transform.localPosition.y != 2.8f)
             {
-                // Swap from a grounded hit to its respective aerial hit
-                hitBoxes[hitIndex].enabled = false;
-                hitBoxes[hitIndex + 2].enabled = true;
-                hitIndex += 2;
+                // Swap from a grounded hit positions to aerial hit positions
+                hitBoxes[0].transform.localPosition = new Vector2(0f, 2.8f);
+                hitBoxes[1].transform.localPosition = new Vector2(1.5f, -.3f);
             }
-            else if (!airborne && hitIndex >= 2)
+            else if (!airborne && hitBoxes[0].transform.localPosition.y != 2.4f)
             {
-                // Swap from an aerial hit to its respective grounded hit
-                hitBoxes[hitIndex].enabled = false;
-                hitBoxes[hitIndex - 2].enabled = true;
-                hitIndex -= 2;
+                // Swap from an aerial hit positions to grounded hit positions
+                hitBoxes[0].transform.localPosition = new Vector2(0f, 2.4f);
+                hitBoxes[1].transform.localPosition = new Vector2(4f, -.5f);
             }
 
             // Add to hitTimer if necessary
@@ -132,7 +128,7 @@ public class Player : MonoBehaviour
         if (runPressed == RIGHT)
             rb.velocity = new Vector2(runSpd, rb.velocity.y);
         else if (runPressed == LEFT)
-            rb.velocity = new Vector2(-runSpd, rb.velocity.y);
+            rb.velocity = new Vector2(-runSpd * 4/5, rb.velocity.y);
         else
             rb.velocity = new Vector2(0, rb.velocity.y);
 
