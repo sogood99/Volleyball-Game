@@ -36,7 +36,8 @@ public class Ball : MonoBehaviour
             sprite.localScale = new Vector2(1 - (stretch / 2), 1 + stretch);
         }
         else
-            sprite.localScale = new Vector2(1, 1);
+            if (sprite.localScale != new Vector3(1, 1, 1))
+                sprite.localScale = new Vector2(1, 1);
     }
 
     // Put all of the rigidbody stuff in here

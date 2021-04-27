@@ -15,8 +15,9 @@ public class Player : MonoBehaviour
     private string runPressed;
     private string prevRun;
 
-    public float jumpSpd = 25;
+    public float jumpSpd = 40;
     private bool jumpPressed = false;
+    public float maxGravScale = 20;
 
     public SpriteRenderer[] hitBoxes;
     // hitIndex is -1 if no hitBox should be out
@@ -67,8 +68,6 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && !airborne)
             jumpPressed = true;
 
-
-
         // Check for hit keys pressed
         if (hitIndex == -1)
         {
@@ -117,6 +116,20 @@ public class Player : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpSpd);
             jumpPressed = false;
         }
+
+        // Give the player a "flea jump" by having them hang in the air
+        // Also not an accurate representation of physics
+        if (rb.velocity.y <= jumpSpd * .21f && rb.velocity.y > 0)
+        {
+            float vScale = rb.velocity.y / (jumpSpd * .21f);
+            // Gravity scales from 5 -> 10
+            float dynamicGravity = (maxGravScale * .01f) + (vScale * (maxGravScale * .99f));
+            // Stretches from 1 -> 2, Squashes from 1 -> 1.5
+            rb.gravityScale = dynamicGravity;
+        }
+        else
+            if (rb.gravityScale != maxGravScale)
+                rb.gravityScale = maxGravScale;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
