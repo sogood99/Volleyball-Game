@@ -6,6 +6,7 @@ public class Hitbox : MonoBehaviour
 {
     public Player player;
     public Ball ball;
+    private bool sameHit = false;
 
     public Vector2 floorPos;
     public Vector2 airPos;
@@ -31,21 +32,21 @@ public class Hitbox : MonoBehaviour
         if (type == 0)
         {
             // Defensive hit
-            floorPos = new Vector2(0f, .5f);
-            airPos = new Vector2(0f, .8f);
+            floorPos = new Vector2(.2f, 3.2f);
+            airPos = new Vector2(.1f, 3.8f);
             duration = .5f;
         }
         if (type == 1)
         {
             // Offensive hit
-            floorPos = new Vector2(.6f, -.2f);
-            airPos = new Vector2(.3f, -.1f);
+            floorPos = new Vector2(1.1f, -1.2f);
+            airPos = new Vector2(.4f, -1.4f);
             duration = .5f;
         }
         if (type == 2)
         {
             // Spike Hit
-            floorPos = new Vector2(.7f, .1f);
+            floorPos = new Vector2(2.4f, .5f);
             airPos = floorPos;
             duration = .5f;
         }
@@ -107,16 +108,25 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collider)
     {
-        if (active && collider.gameObject == ball.gameObject)
+        if (active && !sameHit && collider.gameObject == ball.gameObject)
         {
-            Debug.Log("hello");
+            // Eventually these should be more complex algorithms
             if (type == 0)
                 ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 60), ForceMode2D.Impulse);
             else if (type == 1)
                 ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(30, 30), ForceMode2D.Impulse);
             else if (type == 2)
                 ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(40, -10), ForceMode2D.Impulse);
+
+            // This makes sure a hitbox only acts once
+            sameHit = true;
         }
+    }
+
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        if (active && collider.gameObject == ball.gameObject)
+            sameHit = false;
     }
 
     // Change position if it doesn't fit with player

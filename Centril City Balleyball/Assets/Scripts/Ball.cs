@@ -28,11 +28,12 @@ public class Ball : MonoBehaviour
         sprite.rotation = Quaternion.LookRotation(Vector3.forward, rb.velocity.normalized);
 
         // Stretch the ball based on speed
-        if (rb.velocity.magnitude >= maxSpd/2)
+        if (rb.velocity.magnitude >= maxSpd * .4f)
         {
-            float surplusSpd = rb.velocity.magnitude - (maxSpd/2);
-            float stretch = surplusSpd / (maxSpd/2);
-            sprite.localScale = new Vector2(1 - (stretch * 1/3), 1 + stretch);
+            float surplusSpd = rb.velocity.magnitude - (maxSpd * .4f);
+            float stretch = surplusSpd / (maxSpd * .6f);
+            // Stretches from 1 -> 2, Squashes from 1 -> 1.5
+            sprite.localScale = new Vector2(1 - (stretch / 2), 1 + stretch);
         }
         else
             sprite.localScale = new Vector2(1, 1);
