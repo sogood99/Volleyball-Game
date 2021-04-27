@@ -44,6 +44,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4950665715836148727}
   - component: {fileID: 4950665715836148726}
+  - component: {fileID: 7837977631889838149}
   m_Layer: 0
   m_Name: Offensive-Ground
   m_TagString: Untagged
@@ -115,6 +116,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &7837977631889838149
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4950665715836148724}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.000000014901161}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &4950665715876495962
 GameObject:
   m_ObjectHideFlags: 0
@@ -280,7 +297,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 10
-  m_Material: {fileID: 6200000, guid: 16e5cdd7d7e8fb54883a07dd4d470f6f, type: 2}
+  m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -294,7 +311,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 4950665715876495962}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 16e5cdd7d7e8fb54883a07dd4d470f6f, type: 2}
+  m_Material: {fileID: 6200000, guid: 2cd29861d2d920d4ebd31d5c6623406c, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -342,6 +359,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4950665716134014429}
   - component: {fileID: 4950665716134014428}
+  - component: {fileID: 1178162019807954807}
   m_Layer: 0
   m_Name: Defensive-Ground
   m_TagString: Untagged
@@ -413,6 +431,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &1178162019807954807
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4950665716134014418}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &4950665716465208317
 GameObject:
   m_ObjectHideFlags: 0
@@ -423,6 +457,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4950665716465208319}
   - component: {fileID: 4950665716465208316}
+  - component: {fileID: 5500420749818968260}
   m_Layer: 0
   m_Name: Offensive-Air
   m_TagString: Untagged
@@ -494,6 +529,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &5500420749818968260
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4950665716465208317}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &4950665716568333771
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,6 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4950665716568333770}
   - component: {fileID: 4950665716568333781}
+  - component: {fileID: 2878558917485285218}
   m_Layer: 0
   m_Name: Defensive-Air
   m_TagString: Untagged
@@ -575,3 +627,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &2878558917485285218
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4950665716568333771}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5

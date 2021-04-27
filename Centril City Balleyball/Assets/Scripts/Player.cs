@@ -19,7 +19,8 @@ public class Player : MonoBehaviour
     private bool jumpPressed = false;
 
     public SpriteRenderer[] hitBoxes;
-    private int hitting = -1;
+    // hitIndex is -1 if no hitBox should be out
+    private int hitIndex = -1;
     public float hitDuration = .5f;
     private float hitTimer;
 
@@ -71,43 +72,42 @@ public class Player : MonoBehaviour
 
 
         // Check for hit keys pressed
-        if (hitting == -1)
+        if (hitIndex == -1)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
                 if (airborne)
-                { hitBoxes[2].enabled = true; hitting = 2; }
+                { hitBoxes[2].enabled = true; hitIndex = 2; }
                 else
-                { hitBoxes[0].enabled = true; hitting = 0; }
+                { hitBoxes[0].enabled = true; hitIndex = 0; }
             }
             else if (Input.GetKeyDown(KeyCode.S))
             {
                 if (airborne)
-                { hitBoxes[3].enabled = true; hitting = 3; }
+                { hitBoxes[3].enabled = true; hitIndex = 3; }
                 else
-                { hitBoxes[1].enabled = true; hitting = 1; }
+                { hitBoxes[1].enabled = true; hitIndex = 1; }
             }
         }
 
         // If currently hitting
-        if (hitting != -1)
+        if (hitIndex != -1)
         {
             // If airborne and hit type disagree, fix it
-            if (airborne && hitting <= 1)
+            if (airborne && hitIndex <= 1)
             {
-                // Swap from a grounded hit to its respective arial hit
-                hitBoxes[hitting].enabled = false;
-                hitBoxes[hitting + 2].enabled = true;
-                hitting += 2;
+                // Swap from a grounded hit to its respective aerial hit
+                hitBoxes[hitIndex].enabled = false;
+                hitBoxes[hitIndex + 2].enabled = true;
+                hitIndex += 2;
             }
-            else if (!airborne && hitting >= 2)
+            else if (!airborne && hitIndex >= 2)
             {
-                // Swap from an arial hit to its respective grounded hit
-                hitBoxes[hitting].enabled = false;
-                hitBoxes[hitting - 2].enabled = true;
-                hitting -= 2;
+                // Swap from an aerial hit to its respective grounded hit
+                hitBoxes[hitIndex].enabled = false;
+                hitBoxes[hitIndex - 2].enabled = true;
+                hitIndex -= 2;
             }
-
 
             // Add to hitTimer if necessary
             hitTimer += Time.deltaTime;
@@ -117,9 +117,9 @@ public class Player : MonoBehaviour
             {
                 hitTimer = 0;
 
-                hitBoxes[hitting].enabled = false;
+                hitBoxes[hitIndex].enabled = false;
 
-                hitting = -1;
+                hitIndex = -1;
             }
         }
     }
