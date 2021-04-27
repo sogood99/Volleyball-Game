@@ -20,11 +20,9 @@ public class Player : MonoBehaviour
 
     public SpriteRenderer[] hitBoxes;
     // hitIndex is -1 if no hitBox should be out
-    private int hitIndex = -1;
-    public float hitDuration = .5f;
-    private float hitTimer;
+    public int hitIndex = -1;
 
-    private bool airborne;
+    public bool airborne;
 
     // Start is called before the first frame update
     private void Start()
@@ -78,45 +76,26 @@ public class Player : MonoBehaviour
             {
                 // Activate a defensive hit 
                 hitIndex = 0;
-                hitBoxes[hitIndex].enabled = true;
+                hitBoxes[hitIndex].GetComponent<Hitbox>().active = true;
             }
             else if (Input.GetKeyDown(KeyCode.S))
             {
                 // Activate an offensive hit
                 hitIndex = 1;
-                hitBoxes[hitIndex].enabled = true;
+                hitBoxes[hitIndex].GetComponent<Hitbox>().active = true;
+            }
+
+            if (airborne && Input.GetKeyDown(KeyCode.Space))
+            {
+                // Activate an spike hit
+                hitIndex = 2;
+                hitBoxes[hitIndex].GetComponent<Hitbox>().active = true;
             }
         }
 
         // If currently hitting
         if (hitIndex != -1)
         {
-            // Always make sure player and hit positions agree
-            if (airborne && hitBoxes[0].transform.localPosition.y != 2.8f)
-            {
-                // Swap from a grounded hit positions to aerial hit positions
-                hitBoxes[0].transform.localPosition = new Vector2(0f, 2.8f);
-                hitBoxes[1].transform.localPosition = new Vector2(1.5f, -.3f);
-            }
-            else if (!airborne && hitBoxes[0].transform.localPosition.y != 2.4f)
-            {
-                // Swap from an aerial hit positions to grounded hit positions
-                hitBoxes[0].transform.localPosition = new Vector2(0f, 2.4f);
-                hitBoxes[1].transform.localPosition = new Vector2(4f, -.5f);
-            }
-
-            // Add to hitTimer if necessary
-            hitTimer += Time.deltaTime;
-
-            // End the hit when necessary
-            if (hitTimer >= hitDuration)
-            {
-                hitTimer = 0;
-
-                hitBoxes[hitIndex].enabled = false;
-
-                hitIndex = -1;
-            }
         }
     }
 

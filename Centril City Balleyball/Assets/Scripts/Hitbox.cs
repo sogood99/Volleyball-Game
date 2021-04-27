@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Hitbox : MonoBehaviour
 {
-    public GameObject ball;
+    public Player player;
+    public Ball ball;
 
     public Vector2 floorPos;
     public Vector2 airPos;
@@ -25,7 +26,7 @@ public class Hitbox : MonoBehaviour
     }
 
     // Parameterized constructor
-    public Hitbox(int type, GameObject ball = null)
+    public Hitbox(int type, Ball ball = null)
     {
         if (type == 0)
         {
@@ -60,7 +61,7 @@ public class Hitbox : MonoBehaviour
     }
 
     // VERY parameterized constructor
-    public Hitbox(Vector2 floorPos, Vector2 airPos, float duration, GameObject ball = null)
+    public Hitbox(Vector2 floorPos, Vector2 airPos, float duration, Ball ball = null)
     {
         this.floorPos = floorPos;
         this.airPos = airPos;
@@ -79,6 +80,13 @@ public class Hitbox : MonoBehaviour
     {
         if (active)
         {
+            // Enable the sprite (for debugging)
+            if (!GetComponent<SpriteRenderer>().enabled)
+                GetComponent<SpriteRenderer>().enabled = true;
+
+            // Fix position if necessary
+            CorrectPosition(player.airborne);
+
             // Add to timer
             timer += Time.deltaTime;
 
@@ -87,14 +95,21 @@ public class Hitbox : MonoBehaviour
             {
                 timer = 0;
                 active = false;
+
+                // Disable the sprite (for debugging)
+                GetComponent<SpriteRenderer>().enabled = false;
+
+                // Reset player hitIndex
+                player.hitIndex = -1;
             }
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerStay2D(Collider2D collider)
     {
-        if (active && collision.gameObject == ball)
+        if (active && collider.gameObject == ball.gameObject)
         {
+            Debug.Log("hello");
             if (type == 0)
                 ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 60), ForceMode2D.Impulse);
             else if (type == 1)
@@ -102,5 +117,14 @@ public class Hitbox : MonoBehaviour
             else if (type == 2)
                 ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(40, -10), ForceMode2D.Impulse);
         }
+    }
+
+    // Change position if it doesn't fit with player
+    public void CorrectPosition(bool airborne)
+    {
+        if (airborne && transform.localPosition != new Vector3(airPos.x, airPos.y, 0))
+            transform.localPosition = airPos;
+        else if (!airborne && transform.localPosition != new Vector3(floorPos.x, floorPos.y, 0))
+            transform.localPosition = floorPos;
     }
 }
