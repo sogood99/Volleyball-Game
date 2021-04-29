@@ -4,18 +4,35 @@ using UnityEngine;
 
 public class Hitbox : MonoBehaviour
 {
-    public Player player;
-    private bool sameHit = false;
-
+    // Personalized variables
     public Vector2 floorPos;
     public Vector2 airPos;
-
-    public int type;
-
-    public float timer = 0;
     public float duration;
 
+    // Logic variables
+    public int type;
     public bool active = false;
+    private bool sameHit = false;
+    public float timer = 0;
+
+    // Other GameObjects
+    private Manager worldManager;
+    public Athlete player;
+    public SpriteRenderer sprite;
+
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        // Scale child sprite to fit the collider
+        sprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        float scale = GetComponent<CircleCollider2D>().radius/ sprite.bounds.extents.x;
+        sprite.transform.localScale = new Vector2(scale, scale);
+
+        // Find link up worldManager
+        worldManager = GameObject.FindGameObjectWithTag("World").GetComponent<Manager>();
+    }
 
     // Default constructor
     public Hitbox()
@@ -65,19 +82,14 @@ public class Hitbox : MonoBehaviour
         this.duration = duration;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
     // Update is called once per frame
     void Update()
     {
         if (active)
         {
-            // Enable the sprite (for debugging)
-            if (!GetComponent<SpriteRenderer>().enabled)
-                GetComponent<SpriteRenderer>().enabled = true;
+            // Enable the sprite if allowed
+            if (worldManager.debugMode && !sprite.enabled)
+                sprite.enabled = true;
 
             // Fix position if necessary
             CorrectPosition(player.airborne);
@@ -92,8 +104,9 @@ public class Hitbox : MonoBehaviour
                 active = false;
                 sameHit = false;
 
-                // Disable the sprite (for debugging)
-                GetComponent<SpriteRenderer>().enabled = false;
+                // Disable the sprite
+                if (worldManager.debugMode || sprite.enabled)
+                    sprite.enabled = false;
 
                 // Reset player hitIndex
                 player.hitIndex = -1;

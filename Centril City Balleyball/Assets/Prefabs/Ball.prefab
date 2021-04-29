@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6613902826447581247}
   m_Layer: 0
   m_Name: Ball
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -135,6 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpd: 150
+  hitGround: 0
 --- !u!1 &6613902827805198190
 GameObject:
   m_ObjectHideFlags: 0

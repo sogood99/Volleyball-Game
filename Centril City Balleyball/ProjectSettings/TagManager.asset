@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - World
+  - Ball
+  - Athlete
+  - Hitbox
+  - Floor
+  - Wall
   layers:
   - Default
   - TransparentFX
