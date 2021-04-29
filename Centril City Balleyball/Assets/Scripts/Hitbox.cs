@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum HitType
+{
+    Defense,
+    Offense,
+    Spike
+}
+
 public class Hitbox : MonoBehaviour
 {
     // Personalized variables
@@ -10,10 +17,10 @@ public class Hitbox : MonoBehaviour
     public float duration;
 
     // Logic variables
-    public int type;
+    public HitType type;
     public bool active = false;
     private bool sameHit = false;
-    public float timer = 0;
+    private float timer = 0;
 
     // Other GameObjects
     private Manager worldManager;
@@ -42,23 +49,23 @@ public class Hitbox : MonoBehaviour
     }
 
     // Parameterized constructor
-    public Hitbox(int type)
+    public Hitbox(HitType type)
     {
-        if (type == 0)
+        if (type == HitType.Defense)
         {
             // Defensive hit
             floorPos = new Vector2(.2f, 3.2f);
             airPos = new Vector2(.1f, 3.8f);
             duration = .5f;
         }
-        if (type == 1)
+        if (type == HitType.Offense)
         {
             // Offensive hit
             floorPos = new Vector2(1.1f, -1.2f);
             airPos = new Vector2(.4f, -1.4f);
             duration = .5f;
         }
-        if (type == 2)
+        if (type == HitType.Spike)
         {
             // Spike Hit
             floorPos = new Vector2(2.4f, .5f);
@@ -118,59 +125,12 @@ public class Hitbox : MonoBehaviour
     {
         if (active && collider.gameObject == player.ballRb.gameObject)
             if (!sameHit && !player.ball.hitGround)
-        {
-            // Figure out the direction the ball should be hit
-            int returnDirection = 1;
-            if (!player.leftSide)
-                returnDirection = -1;
-
-            // Initialize return variables
-            Vector2 angle = Vector2.zero;
-            Vector2 trajectory = Vector2.zero;
-
-            // Calculate income variables
-            Vector2 impactAngle = player.ballRb.velocity.normalized;
-            float impactMag = player.ballRb.velocity.magnitude;
-            float magScale = impactMag / player.ball.maxSpd;
-
-            // Figure out how the ball should be returned
-            if (type == 0)
             {
-                if (player.GetComponent<Rigidbody2D>().velocity.x < 0)
-                    angle = new Vector2(-.1f, 1).normalized;
-                else if (player.GetComponent<Rigidbody2D>().velocity.x == 0)
-                    angle = new Vector2(0, 1).normalized;
-                else
-                    angle = new Vector2(.2f, 1).normalized;
+                player.HitTheBall(this);
 
-                // Return velocity magnitude ranges from .4 -> .9 of maxSpd
-                trajectory = angle * (player.ball.maxSpd * .4f) * (1 + (magScale * .5f));
+                // This makes sure a hitbox only acts once
+                sameHit = true;
             }
-            else if (type == 1)
-            {
-                if (player.GetComponent<Rigidbody2D>().velocity.x < 0)
-                    angle = new Vector2(1, 1.7f).normalized;
-                else if (player.GetComponent<Rigidbody2D>().velocity.x == 0)
-                    angle = new Vector2(1, 1.2f).normalized;
-                else
-                    angle = new Vector2(1, .7f).normalized;
-
-                // Return velocity magnitude ranges from .5 -> .8 of maxSpd
-                trajectory = angle * (player.ball.maxSpd * .5f) * (1 + (magScale * .3f));
-            }
-            else if (type == 2)
-            {
-                angle = new Vector2(1, -1.4f).normalized;
-
-                // Return velocity magnitude is .9 of maxSpd
-                trajectory = angle * (player.ball.maxSpd * .9f);
-            }
-
-            player.ballRb.velocity = new Vector2(trajectory.x * returnDirection, trajectory.y);
-
-            // This makes sure a hitbox only acts once
-            sameHit = true;
-        }
     }
 
     // Change position if it doesn't fit with player

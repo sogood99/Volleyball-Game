@@ -17,16 +17,15 @@ public class Athlete : MonoBehaviour
     public Hitbox[] hitBoxes;
 
     // Logic Variables
-    private const string RIGHT = "right";
-    private const string LEFT = "left";
     public bool leftSide;
-    private string runPressed;
-    private string prevRun;
-    private bool jumpPressed = false;
     public bool airborne;
-    public float maxGravScale = 20;
+    public float maxGravScale = 40;
     // hitIndex is -1 if no hitBox should be out
     public int hitIndex = -1;
+
+    // Update -> FixedUpdate
+    private char runPressed;
+    private bool jumpPressed = false;
 
     // Components
     private Rigidbody2D rb;
@@ -45,35 +44,21 @@ public class Athlete : MonoBehaviour
         Physics2D.IgnoreCollision(ball.GetComponent<Collider2D>(), GetComponent<Collider2D>());
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
         // Check which run buttons are pressed
         if (Input.GetKey(KeyCode.D))
-        {
-            // In case both keys are pressed
-            if (Input.GetKey(KeyCode.A))
-            {
-                // Go with the most recent presss
-                if (prevRun == RIGHT)
-                    runPressed = LEFT;
-                // In the case of both keys pressed on the same frame, default to right
-                else
-                    runPressed = RIGHT;
-            }
-            // Otherwise, just go right
-            else
-                runPressed = RIGHT;
-        }
+            // In the case of both keys pressed on the same frame, default to right
+            runPressed = 'R';
         else if (Input.GetKey(KeyCode.A))
             // Go left
-            runPressed = LEFT;
+            runPressed = 'L';
         else
             // Go nowhere
-            runPressed = null;
-
-        // Update previous run key pressed
-        prevRun = runPressed;
+            runPressed = 'N';
 
 
         // Check if jump is initiated
@@ -113,14 +98,14 @@ public class Athlete : MonoBehaviour
     // Put all of the rigidbody stuff in here
     private void FixedUpdate()
     {
-        // This is not an accurate representation of physics
-        // However, it feels better to control
-        if (runPressed == RIGHT)
+        // Control the running
+        if (runPressed == 'R')
             rb.velocity = new Vector2(runSpd, rb.velocity.y);
-        else if (runPressed == LEFT)
+        else if (runPressed == 'L')
             rb.velocity = new Vector2(-runSpd * 4/5, rb.velocity.y);
         else
             rb.velocity = new Vector2(0, rb.velocity.y);
+
 
         // Upwards velocity for the jump
         if (jumpPressed)
@@ -130,22 +115,92 @@ public class Athlete : MonoBehaviour
         }
 
         // Give the player a "flea jump" by having them hang in the air
-        // Also not an accurate representation of physics
         if (rb.velocity.y <= jumpSpd * .21f && rb.velocity.y > 0)
         {
             float vScale = rb.velocity.y / (jumpSpd * .21f);
-            // Gravity scales from 5 -> 10
-            float dynamicGravity = (maxGravScale * .01f) + (vScale * (maxGravScale * .99f));
-            // Stretches from 1 -> 2, Squashes from 1 -> 1.5
+            // Gravity scales from (.01 -> 1) * max gravity
+            float dynamicGravity = (.01f + (.99f * vScale)) * maxGravScale;
             rb.gravityScale = dynamicGravity;
         }
         else
-            if (rb.gravityScale != maxGravScale)
-                rb.gravityScale = maxGravScale;
+            rb.gravityScale = maxGravScale;
     }
 
 
-    // These deal with floor collisions
+
+    public virtual void HitTheBall(Hitbox theBox)
+    {
+        // Figure out the direction the ball should be hit
+        int directionX = 1;
+        if (!leftSide)
+            directionX = -1;
+
+        // Calculate income variables
+        Vector2 impactAngle = ballRb.velocity.normalized;
+        float impactMag = ballRb.velocity.magnitude;
+        float magScale = impactMag / ball.maxSpd;
+
+        // Determine which type of hit to use
+        if (theBox.type == HitType.Defense)
+            DefenseHit(directionX, impactAngle, magScale);
+        else if (theBox.type == HitType.Offense)
+            OffenseHit(directionX, impactAngle, magScale);
+        else if (theBox.type == HitType.Spike)
+            SpikeHit(directionX, impactAngle, magScale);
+    }
+
+    protected virtual void DefenseHit(int directionX, Vector2 impactAngle, float magScale)
+    {
+        // Initialize ball return variables
+        Vector2 angle = Vector2.zero;
+        Vector2 trajectory = Vector2.zero;
+
+        if (runPressed == 'L')
+            angle = new Vector2(-.1f, 1).normalized;
+        else if (runPressed == 'N')
+            angle = new Vector2(0, 1).normalized;
+        else if (runPressed == 'R')
+            angle = new Vector2(.2f, 1).normalized;
+
+        // Return velocity magnitude ranges from .4 -> .9 of maxSpd
+        trajectory = angle * (ball.maxSpd * .4f) * (1 + (magScale * .5f));
+        ballRb.velocity = new Vector2(trajectory.x * directionX, trajectory.y);
+    }
+
+    protected virtual void OffenseHit(int directionX, Vector2 impactAngle, float magScale)
+    {
+        // Initialize ball return variables
+        Vector2 angle = Vector2.zero;
+        Vector2 trajectory = Vector2.zero;
+
+        if (runPressed == 'L')
+            angle = new Vector2(1, 1.7f).normalized;
+        else if (runPressed == 'N')
+            angle = new Vector2(1, 1.2f).normalized;
+        else if (runPressed == 'R')
+            angle = new Vector2(1, .7f).normalized;
+        
+        // Return velocity magnitude ranges from .5 -> .8 of maxSpd
+        trajectory = angle * (ball.maxSpd * .5f) * (1 + (magScale * .3f));
+        ballRb.velocity = new Vector2(trajectory.x * directionX, trajectory.y);
+    }
+
+    protected virtual void SpikeHit(int directionX, Vector2 impactAngle, float magScale)
+    {
+        // Initialize ball return variables
+        Vector2 angle = Vector2.zero;
+        Vector2 trajectory = Vector2.zero;
+
+        angle = new Vector2(1, -1.4f).normalized;
+
+        // Return velocity magnitude is .9 of maxSpd
+        trajectory = angle * (ball.maxSpd * .9f);
+        ballRb.velocity = new Vector2(trajectory.x * directionX, trajectory.y);
+    }
+
+
+
+    // Deal with floor collisions
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.name == "Floor")

@@ -289,18 +289,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 544828542889e954a9a49983c2372ec4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ball: {fileID: 0}
-  ballRb: {fileID: 0}
   runSpd: 30
-  leftSide: 1
   jumpSpd: 80
-  maxGravScale: 40
   hitBoxes:
   - {fileID: 3079453619719325579}
   - {fileID: 3079453619934075189}
   - {fileID: 3079453619144256289}
-  hitIndex: -1
+  leftSide: 1
   airborne: 0
+  maxGravScale: 40
+  hitIndex: -1
+  ball: {fileID: 0}
+  ballRb: {fileID: 0}
 --- !u!212 &3079453619099972081
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -417,7 +417,6 @@ MonoBehaviour:
   duration: 0.5
   type: 2
   active: 0
-  timer: 0
   player: {fileID: 3079453619099972086}
   sprite: {fileID: 0}
 --- !u!1 &3079453619719325573
@@ -432,7 +431,7 @@ GameObject:
   - component: {fileID: 3079453619719325576}
   - component: {fileID: 3079453619719325579}
   m_Layer: 0
-  m_Name: Defensive
+  m_Name: Defense
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -486,7 +485,6 @@ MonoBehaviour:
   duration: 0.5
   type: 0
   active: 0
-  timer: 0
   player: {fileID: 3079453619099972086}
   sprite: {fileID: 0}
 --- !u!1 &3079453619934075191
@@ -501,7 +499,7 @@ GameObject:
   - component: {fileID: 3079453619934075194}
   - component: {fileID: 3079453619934075189}
   m_Layer: 0
-  m_Name: Offensive
+  m_Name: Offense
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -555,7 +553,6 @@ MonoBehaviour:
   duration: 0.5
   type: 1
   active: 0
-  timer: 0
   player: {fileID: 3079453619099972086}
   sprite: {fileID: 0}
 --- !u!1 &8281753674542799006
