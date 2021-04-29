@@ -21,6 +21,8 @@ public class Athlete : MonoBehaviour
     public bool airborne;
     public bool hitting;
     public float maxGravScale = 40;
+    public bool onSomeone = false;
+    public bool underSomeone = false;
 
     // Update -> FixedUpdate
     private char runPressed;
@@ -28,19 +30,20 @@ public class Athlete : MonoBehaviour
 
     // Components
     private Rigidbody2D rb;
+    public BoxCollider2D mountTrigger;
     public Ball ball;
     public Rigidbody2D ballRb;
+    public Manager worldManager;
 
 
 
     // Start is called before the first frame update
     private void Start()
     {
+        worldManager = GameObject.FindGameObjectWithTag("World").GetComponent<Manager>();
+        rb = GetComponent<Rigidbody2D>();
         ball = GameObject.FindGameObjectWithTag("Ball").GetComponent<Ball>();
         ballRb = ball.GetComponent<Rigidbody2D>();
-        rb = GetComponent<Rigidbody2D>();
-        
-        Physics2D.IgnoreCollision(ball.GetComponent<Collider2D>(), GetComponent<Collider2D>());
     }
 
 
@@ -48,67 +51,120 @@ public class Athlete : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Check which run buttons are pressed
-        if (Input.GetKey(KeyCode.D))
-            // In the case of both keys pressed on the same frame, default to right
-            runPressed = 'R';
-        else if (Input.GetKey(KeyCode.A))
-            // Go left
-            runPressed = 'L';
-        else
-            // Go nowhere
+        // Check if standing on an athlete
+        if (onSomeone || underSomeone)
+        {
+            // You can't move off
             runPressed = 'N';
+        }
+        else
+        {
+            // Check which run buttons are pressed
+            if (Input.GetKey(KeyCode.D))
+                // In the case of both keys pressed on the same frame, default to right
+                runPressed = 'R';
+            else if (Input.GetKey(KeyCode.A))
+                // Go left
+                runPressed = 'L';
+            else
+                // Go nowhere
+                runPressed = 'N';
+        }
 
 
         // Check if jump is initiated
         if (Input.GetKeyDown(KeyCode.Space) && !airborne)
             jumpPressed = true;
 
-        // Check for hit keys pressed
-        if (!hitting)
+        // Temporarily lock control to Player
+        if (name == "Player")
         {
-            if (Input.GetKeyDown(KeyCode.W))
-                // Activate a defense hit 
-                hitBoxes[0].active = true;
-            else if (Input.GetKeyDown(KeyCode.S))
-                // Activate an offense hit
-                hitBoxes[1].active = true;
+            // Check for hit keys pressed
+            if (!hitting)
+            {
+                if (Input.GetKeyDown(KeyCode.W))
+                    // Activate a defense hit 
+                    hitBoxes[0].active = true;
+                else if (Input.GetKeyDown(KeyCode.S))
+                    // Activate an offense hit
+                    hitBoxes[1].active = true;
 
-            if (airborne && Input.GetKeyDown(KeyCode.Space))
-                // Activate an spike hit
-                hitBoxes[2].active = true;
+                if (airborne && Input.GetKeyDown(KeyCode.Space))
+                    // Activate an spike hit
+                    hitBoxes[2].active = true;
+            }
         }
     }
 
     // Put all of the rigidbody stuff in here
     private void FixedUpdate()
     {
-        // Control the running
-        if (runPressed == 'R')
-            rb.velocity = new Vector2(runSpd, rb.velocity.y);
-        else if (runPressed == 'L')
-            rb.velocity = new Vector2(-runSpd * 4/5, rb.velocity.y);
-        else
-            rb.velocity = new Vector2(0, rb.velocity.y);
-
-
-        // Upwards velocity for the jump
-        if (jumpPressed)
+        // Temporarily lock control to Player
+        if (name == "Player")
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpSpd);
-            jumpPressed = false;
-        }
+            // Control the running
+            if (runPressed == 'R')
+            {
+                rb.velocity = new Vector2(runSpd, rb.velocity.y);
+            }
+            else if (runPressed == 'L')
+                rb.velocity = new Vector2(-runSpd * 4 / 5, rb.velocity.y);
+            else
+                rb.velocity = new Vector2(0, rb.velocity.y);
 
-        // Give the player a "flea jump" by having them hang in the air
-        if (rb.velocity.y <= jumpSpd * .21f && rb.velocity.y > 0)
-        {
-            float vScale = rb.velocity.y / (jumpSpd * .21f);
-            // Gravity scales from (.01 -> 1) * max gravity
-            float dynamicGravity = (.01f + (.99f * vScale)) * maxGravScale;
-            rb.gravityScale = dynamicGravity;
+            // Move slower in the air
+            if (airborne)
+                rb.velocity = new Vector2(rb.velocity.x * .9f, rb.velocity.y);
+
+
+            // Upwards velocity for the jump
+            if (jumpPressed)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpSpd);
+                jumpPressed = false;
+            }
+
+            // Give the athlete a "flea jump" by having them hang in the air
+            if (rb.velocity.y <= jumpSpd * .21f && rb.velocity.y > 0)
+            {
+                float vScale = rb.velocity.y / (jumpSpd * .21f);
+                // Gravity scales from (.01 -> 1) * max gravity
+                float dynamicGravity = (.01f + (.99f * vScale)) * maxGravScale;
+                rb.gravityScale = dynamicGravity;
+            }
+            else
+                rb.gravityScale = maxGravScale;
+
+            // Check if about to land on another athlete
+            // Eventually have it only check on same team
+            foreach (GameObject otherGuy in worldManager.allAthletes)
+            {
+                if (otherGuy != gameObject)
+                {
+                    // Check if other athlete is grounded, and this athlete is falling
+                    if (!otherGuy.GetComponent<Athlete>().airborne && rb.velocity.y < 0)
+                    {
+                        Bounds theseBounds = GetComponent<Collider2D>().bounds;
+                        Bounds thoseBounds = otherGuy.GetComponent<Collider2D>().bounds;
+                        // Check if this athlete will pass through the other athlete's collider vertically
+                        if (theseBounds.min.y + rb.velocity.y <= thoseBounds.max.y)
+                        {
+                            float inverseSlope = rb.velocity.x / rb.velocity.y;
+                            float distY = theseBounds.min.y + rb.velocity.y - thoseBounds.max.y;
+                            float distX = inverseSlope * distY;
+                            // Check if this athlete will land on the other athlete's collider horizontally
+                            // The horizontal area is restricted for a tighter landing requirement
+                            if (Mathf.Abs(theseBounds.center.x + distX - thoseBounds.center.x) <= thoseBounds.extents.x)
+                            {
+                                // If all checks are passed, allow collisions
+                                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), otherGuy.GetComponent<Collider2D>(), false);
+                            }
+                        }
+
+                    }
+                }
+            }
         }
-        else
-            rb.gravityScale = maxGravScale;
     }
 
 
@@ -188,12 +244,44 @@ public class Athlete : MonoBehaviour
     // Deal with floor collisions
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.name == "Floor")
+        if (collision.gameObject.tag == "Floor")
             airborne = false;
+        else if (collision.gameObject.tag == "Athlete")
+        {
+            // If above the other athlete
+            if (transform.position.y > collision.gameObject.transform.position.y)
+            {
+                airborne = false;
+                onSomeone = true;
+
+                // Move this athlete to the center of the other
+                transform.position = new Vector2(collision.gameObject.transform.position.x, transform.position.y);
+            }
+            // If below the other athlete
+            else
+            {
+                underSomeone = true;
+            }
+        }
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.name == "Floor")
+        if (collision.gameObject.tag == "Floor")
             airborne = true;
+        else if (collision.gameObject.tag == "Athlete")
+        {
+            // If above the other athlete
+            if (transform.position.y > collision.gameObject.transform.position.y)
+            {
+                airborne = true;
+                onSomeone = false;
+                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collision.gameObject.GetComponent<Collider2D>());
+            }
+            // If below the other athlete
+            else
+            {
+                underSomeone = false;
+            }
+        }
     }
 }
