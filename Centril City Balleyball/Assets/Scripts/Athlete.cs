@@ -19,9 +19,8 @@ public class Athlete : MonoBehaviour
     // Logic Variables
     public bool leftSide;
     public bool airborne;
+    public bool hitting;
     public float maxGravScale = 40;
-    // hitIndex is -1 if no hitBox should be out
-    public int hitIndex = -1;
 
     // Update -> FixedUpdate
     private char runPressed;
@@ -66,32 +65,18 @@ public class Athlete : MonoBehaviour
             jumpPressed = true;
 
         // Check for hit keys pressed
-        if (hitIndex == -1)
+        if (!hitting)
         {
             if (Input.GetKeyDown(KeyCode.W))
-            {
-                // Activate a defensive hit 
-                hitIndex = 0;
-                hitBoxes[hitIndex].active = true;
-            }
+                // Activate a defense hit 
+                hitBoxes[0].active = true;
             else if (Input.GetKeyDown(KeyCode.S))
-            {
-                // Activate an offensive hit
-                hitIndex = 1;
-                hitBoxes[hitIndex].active = true;
-            }
+                // Activate an offense hit
+                hitBoxes[1].active = true;
 
             if (airborne && Input.GetKeyDown(KeyCode.Space))
-            {
                 // Activate an spike hit
-                hitIndex = 2;
-                hitBoxes[hitIndex].active = true;
-            }
-        }
-
-        // If currently hitting
-        if (hitIndex != -1)
-        {
+                hitBoxes[2].active = true;
         }
     }
 

@@ -98,6 +98,10 @@ public class Hitbox : MonoBehaviour
             if (worldManager.debugMode && !sprite.enabled)
                 sprite.enabled = true;
 
+            // If a hitbox is active, the athlete must be hitting
+            if (!player.hitting)
+                player.hitting = true;
+
             // Fix position if necessary
             CorrectPosition(player.airborne);
 
@@ -116,7 +120,7 @@ public class Hitbox : MonoBehaviour
                     sprite.enabled = false;
 
                 // Reset player hitIndex
-                player.hitIndex = -1;
+                player.hitting = false;
             }
         }
     }
