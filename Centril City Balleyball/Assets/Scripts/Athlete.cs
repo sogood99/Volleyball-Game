@@ -34,6 +34,7 @@ public class Athlete : MonoBehaviour
     public Ball ball;
     public Rigidbody2D ballRb;
     public Manager worldManager;
+    private Transform hurtbox;
 
 
 

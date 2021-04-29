@@ -30,7 +30,7 @@ public class Manager : MonoBehaviour
                 Physics2D.IgnoreCollision(allAthletes[0].GetComponent<Collider2D>(), allAthletes[i].GetComponent<Collider2D>());
         }
 
-        debugMode = true;
+        debugMode = false;
     }
 
     // Update is called once per frame
@@ -38,7 +38,13 @@ public class Manager : MonoBehaviour
     {
         // Toggle debug mode with P
         if (Input.GetKeyDown(KeyCode.P))
+        {
             debugMode = !debugMode;
+
+            GameObject[] debugSprites = GameObject.FindGameObjectsWithTag("Debug Sprite");
+            for (int i = 0; i < debugSprites.Length; i++)
+                debugSprites[i].GetComponent<SpriteRenderer>().enabled = debugMode;
+        }
 
         // I guess this always needs to be updated
         allAthletes = GameObject.FindGameObjectsWithTag("Athlete");

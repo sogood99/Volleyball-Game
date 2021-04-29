@@ -10,6 +10,7 @@ TagManager:
   - Hitbox
   - Floor
   - Wall
+  - Debug Sprite
   layers:
   - Default
   - TransparentFX

@@ -32,11 +32,6 @@ public class Hitbox : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Scale child sprite to fit the collider
-        sprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
-        float scale = GetComponent<CircleCollider2D>().radius/ sprite.bounds.extents.x;
-        sprite.transform.localScale = new Vector2(scale, scale);
-
         // Find link up worldManager
         worldManager = GameObject.FindGameObjectWithTag("World").GetComponent<Manager>();
     }
@@ -94,10 +89,6 @@ public class Hitbox : MonoBehaviour
     {
         if (active)
         {
-            // Enable the sprite if allowed
-            if (worldManager.debugMode && !sprite.enabled)
-                sprite.enabled = true;
-
             // If a hitbox is active, the athlete must be hitting
             if (!player.hitting)
                 player.hitting = true;
@@ -114,10 +105,6 @@ public class Hitbox : MonoBehaviour
                 timer = 0;
                 active = false;
                 sameHit = false;
-
-                // Disable the sprite
-                if (worldManager.debugMode || sprite.enabled)
-                    sprite.enabled = false;
 
                 // Reset player hitIndex
                 player.hitting = false;
