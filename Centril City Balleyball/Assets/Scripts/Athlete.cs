@@ -4,8 +4,8 @@ using UnityEngine;
 
 public enum PlayerState
 {
-    RunningForward,
-    RunningBackward,
+    Running,
+    Reversing,
     Jumping
 }
 
@@ -14,7 +14,8 @@ public class Athlete : MonoBehaviour
     // Personalized variables
     public float runSpd = 30;
     public float jumpSpd = 80;
-    public Hitbox[] hitBoxes;
+    public Hitbox[] hitboxes;
+    public int activeHitbox = -1;
 
     // Logic Variables
     public bool leftSide;
@@ -35,6 +36,8 @@ public class Athlete : MonoBehaviour
     public Rigidbody2D ballRb;
     public Manager worldManager;
     private Transform hurtbox;
+    public Animator legAnimator;
+    public Animator mainAnimator;
 
 
 
@@ -84,17 +87,27 @@ public class Athlete : MonoBehaviour
             if (!hitting)
             {
                 if (Input.GetKeyDown(KeyCode.W))
+                {
                     // Activate a defense hit 
-                    hitBoxes[0].active = true;
+                    hitboxes[0].active = true;
+                    activeHitbox = 0;
+                }
                 else if (Input.GetKeyDown(KeyCode.S))
+                {
                     // Activate an offense hit
-                    hitBoxes[1].active = true;
-
+                    hitboxes[1].active = true;
+                    activeHitbox = 1;
+                }
                 if (airborne && Input.GetKeyDown(KeyCode.Space))
+                {
                     // Activate an spike hit
-                    hitBoxes[2].active = true;
+                    hitboxes[2].active = true;
+                    activeHitbox = 2;
+                }
             }
         }
+
+        UpdateAnimator();
     }
 
     // Put all of the rigidbody stuff in here
@@ -284,5 +297,16 @@ public class Athlete : MonoBehaviour
                 underSomeone = false;
             }
         }
+    }
+
+    private void UpdateAnimator()
+    {
+        legAnimator.SetFloat("xVelocity", rb.velocity.x);
+        legAnimator.SetBool("airborne", airborne);
+        legAnimator.SetBool("mounted", underSomeone);
+
+        mainAnimator.SetBool("airborne", airborne);
+        mainAnimator.SetBool("mounted", underSomeone);
+        mainAnimator.SetInteger("hitType", activeHitbox);
     }
 }

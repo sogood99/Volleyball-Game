@@ -96,6 +96,10 @@ public class Hitbox : MonoBehaviour
             // Fix position if necessary
             CorrectPosition(player.airborne);
 
+            // A spike immediately stops once the athlete lands
+            if (type == HitType.Spike && !player.airborne)
+                timer = duration;
+
             // Add to timer
             timer += Time.deltaTime;
 
@@ -108,6 +112,7 @@ public class Hitbox : MonoBehaviour
 
                 // Reset player hitIndex
                 player.hitting = false;
+                player.activeHitbox = -1;
             }
         }
     }
