@@ -49,23 +49,23 @@ public class Hitbox : MonoBehaviour
         if (type == HitType.Defense)
         {
             // Defensive hit
-            floorPos = new Vector2(.2f, 3.2f);
-            airPos = new Vector2(.1f, 3.8f);
-            duration = .5f;
+            floorPos = new Vector2(0f, 1.4f);
+            airPos = new Vector2(.05f, 1.8f);
+            duration = .2f;
         }
         if (type == HitType.Offense)
         {
             // Offensive hit
-            floorPos = new Vector2(1.1f, -1.2f);
-            airPos = new Vector2(.4f, -1.4f);
-            duration = .5f;
+            floorPos = new Vector2(.9f, -.3f);
+            airPos = new Vector2(.15f, -.5f);
+            duration = .2f;
         }
         if (type == HitType.Spike)
         {
             // Spike Hit
-            floorPos = new Vector2(2.4f, .5f);
+            floorPos = new Vector2(1.4f, .2f);
             airPos = floorPos;
-            duration = .5f;
+            duration = .2f;
         }
         else
         {

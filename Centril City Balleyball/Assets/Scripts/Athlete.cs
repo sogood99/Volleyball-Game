@@ -12,8 +12,8 @@ public enum PlayerState
 public class Athlete : MonoBehaviour
 {
     // Personalized variables
-    public float runSpd = 30;
-    public float jumpSpd = 80;
+    public float runSpd;
+    public float jumpSpd;
     public Hitbox[] hitboxes;
     public int activeHitbox = -1;
 
@@ -275,6 +275,14 @@ public class Athlete : MonoBehaviour
             else
             {
                 underSomeone = true;
+
+                if (collision.gameObject.layer < gameObject.layer)
+                {
+                    // If the athlete on top has a lower layer, swap the two
+                    int myLayer = gameObject.layer;
+                    gameObject.layer = collision.gameObject.layer;
+                    collision.gameObject.layer = myLayer;
+                }
             }
         }
     }
