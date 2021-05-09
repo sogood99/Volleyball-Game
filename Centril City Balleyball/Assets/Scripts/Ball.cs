@@ -7,7 +7,7 @@ public class Ball : MonoBehaviour
     // Logic variables
     public float maxSpd;
     public Vector2 startPos;
-    private bool hitGround = false;
+    public bool hitGround = false;
     private Vector2 direction;
 
 
@@ -27,8 +27,6 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (rb.constraints == RigidbodyConstraints2D.FreezeAll)
-            Respawn();
     }
 
     // Put all of the rigidbody stuff in here
@@ -53,6 +51,9 @@ public class Ball : MonoBehaviour
 
         // Clamp the velocity magnitude
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpd);
+
+        if (rb.constraints == RigidbodyConstraints2D.FreezeAll)
+            Respawn();
     }
 
     // Resets the ball
@@ -61,24 +62,36 @@ public class Ball : MonoBehaviour
         transform.position = startPos;
         hitGround = false;
 
+        rb.constraints = RigidbodyConstraints2D.None;
+
         sprite.GetComponent<SpriteRenderer>().color = Color.white;
         sprite.position = new Vector3(sprite.position.x, sprite.position.y, sprite.position.z - .1f);
     }
 
+
+
+    // Deal with collisions
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.name == "Floor")
+        // Check for floor collision
+        if (collision.gameObject.name == "Floor" && hitGround)
         {
-            hitGround = true;
             sprite.GetComponent<SpriteRenderer>().color = Color.gray;
             sprite.position = new Vector3(sprite.position.x, sprite.position.y, sprite.position.z + .1f);
         }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.name == "Floor" && hitGround)
+        // Check for floor collision
+        if (collision.gameObject.name == "Floor")
         {
-            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            // Set hitGround to true on initial bounce
+            if (!hitGround)
+                hitGround = true;
+            // On second contact, freeze position
+            // This prevents infinite bouncing
+            else
+                rb.constraints = RigidbodyConstraints2D.FreezeAll;
         }
     }
 
