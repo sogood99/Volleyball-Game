@@ -21,7 +21,7 @@ public class Athlete : MonoBehaviour
     public bool leftSide;
     public bool airborne;
     public bool hitting;
-    public float maxGravScale = 40;
+    public float maxGravScale;
     public bool onSomeone = false;
     public bool underSomeone = false;
 
@@ -29,7 +29,7 @@ public class Athlete : MonoBehaviour
     private char runPressed;
     private bool jumpPressed = false;
 
-    // Components
+    // Component variables
     private Rigidbody2D rb;
     public BoxCollider2D mountTrigger;
     public Ball ball;

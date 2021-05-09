@@ -4,24 +4,35 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    private Rigidbody2D rb;
-
-    public float maxSpd = 150;
-
-    private Transform sprite;
+    // Logic variables
+    public float maxSpd;
+    public Vector2 startPos;
+    private bool hitGround = false;
     private Vector2 direction;
 
-    public bool hitGround = false;
+
+    // Component variables
+    private Rigidbody2D rb;
+    private Transform sprite;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sprite = transform.GetChild(0);
+
+        transform.position = startPos;
     }
 
     // Update is called once per frame
     void Update()
+    {
+        if (rb.constraints == RigidbodyConstraints2D.FreezeAll)
+            Respawn();
+    }
+
+    // Put all of the rigidbody stuff in here
+    private void FixedUpdate()
     {
         // Direction reflects angle of velocity vector
         direction = rb.velocity.normalized;
@@ -38,15 +49,20 @@ public class Ball : MonoBehaviour
             sprite.localScale = new Vector2(1 - (stretch / 2), 1 + stretch);
         }
         else
-            if (sprite.localScale != new Vector3(1, 1, 1))
-                sprite.localScale = new Vector2(1, 1);
-    }
+            sprite.localScale = new Vector2(1, 1);
 
-    // Put all of the rigidbody stuff in here
-    private void FixedUpdate()
-    {
         // Clamp the velocity magnitude
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpd);
+    }
+
+    // Resets the ball
+    private void Respawn()
+    {
+        transform.position = startPos;
+        hitGround = false;
+
+        sprite.GetComponent<SpriteRenderer>().color = Color.white;
+        sprite.position = new Vector3(sprite.position.x, sprite.position.y, sprite.position.z - .1f);
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -55,7 +71,7 @@ public class Ball : MonoBehaviour
         {
             hitGround = true;
             sprite.GetComponent<SpriteRenderer>().color = Color.gray;
-            sprite.position = new Vector3(sprite.position.x, sprite.position.y, 4.5f);
+            sprite.position = new Vector3(sprite.position.x, sprite.position.y, sprite.position.z + .1f);
         }
     }
     private void OnCollisionEnter2D(Collision2D collision)

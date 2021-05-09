@@ -135,6 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpd: 150
+  startPos: {x: -7, y: 13}
   hitGround: 0
 --- !u!1 &6613902827805198190
 GameObject:
