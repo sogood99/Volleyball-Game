@@ -30,6 +30,8 @@ public class Manager : MonoBehaviour
                 Physics2D.IgnoreCollision(allAthletes[0].GetComponent<Collider2D>(), allAthletes[i].GetComponent<Collider2D>());
         }
 
+        Physics.IgnoreLayerCollision(0, 3, true);
+
         debugMode = false;
     }
 
