@@ -316,7 +316,7 @@ MonoBehaviour:
   defenseKey: 0
   runSpd: 15
   jumpSpd: 40
-  leftSide: 1
+  leftTeam: 1
   maxGravScale: 20
   moveState: 0
   hitState: 0
@@ -324,8 +324,6 @@ MonoBehaviour:
   mountJump: 0
   serving: 0
   hurtbox: {fileID: 932278173421129110}
-  footPoint: {x: 0, y: 0}
-  footPointOffset: 0
   mountTrigger: {fileID: 7435621264936305945}
   worldManager: {fileID: 0}
   legAnimator: {fileID: 5561066377389309923}
@@ -746,7 +744,7 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.06514263, y: 0}
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.1056201
 --- !u!114 &6781413909768730933

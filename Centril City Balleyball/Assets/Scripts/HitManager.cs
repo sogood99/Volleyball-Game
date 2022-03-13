@@ -13,7 +13,7 @@ public enum HitType
     None
 }
 
-public class HitCircleManager : MonoBehaviour
+public class HitManager : MonoBehaviour
 {
     // Collider Fields
     public CircleCollider2D offGrnd;
@@ -48,6 +48,17 @@ public class HitCircleManager : MonoBehaviour
         };
 
         athleteRb = athlete.gameObject.GetComponent<Rigidbody2D>();
+
+        // Flip x offsets of hit circles
+        if (!athlete.leftTeam)
+        {
+            foreach (KeyValuePair<HitType, HitCircle> circDef in circles)
+            {
+                // 2 lines is necessary please just trust me
+                Vector3 circPos = circDef.Value.gameObject.transform.localPosition;
+                circDef.Value.gameObject.transform.localPosition = new Vector3(-circPos.x, circPos.y, circPos.z);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -225,7 +236,7 @@ public class HitCircleManager : MonoBehaviour
             trajectory = angle * (ballScript.maxSpd * .2f) * (1 + (magScale * .2f));
 
         // Flip direction if necessary
-        if (!athlete.leftSide)
+        if (!athlete.leftTeam)
             trajectory.x *= -1;
 
         // Update ball velocity
@@ -256,7 +267,7 @@ public class HitCircleManager : MonoBehaviour
             trajectory = angle * (ballScript.maxSpd * .2f) * (1 + (magScale * .3f));
 
         // Flip direction if necessary
-        if (!athlete.leftSide)
+        if (!athlete.leftTeam)
             trajectory.x *= -1;
 
         // Update ball velocity
@@ -277,7 +288,7 @@ public class HitCircleManager : MonoBehaviour
         trajectory = angle * (ballScript.maxSpd * .1f);
 
         // Flip direction if necessary
-        if (!athlete.leftSide)
+        if (!athlete.leftTeam)
             trajectory.x *= -1;
 
         // Update ball velocity
@@ -298,7 +309,7 @@ public class HitCircleManager : MonoBehaviour
         trajectory = angle * (ballScript.maxSpd * .9f);
 
         // Flip direction if necessary
-        if (!athlete.leftSide)
+        if (!athlete.leftTeam)
             trajectory.x *= -1;
 
         // Update ball velocity

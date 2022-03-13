@@ -44,7 +44,7 @@ public class Athlete : MonoBehaviour
     // Logic fields
     public float runSpd;
     public float jumpSpd;
-    public bool leftSide;
+    public bool leftTeam;
     public float maxGravScale;
 
     // State fields
@@ -61,23 +61,17 @@ public class Athlete : MonoBehaviour
     // Hurtbox Fields
     private Rigidbody2D rb;
     public BoxCollider2D hurtbox;
-    public Vector2 footPoint;
-    public float footPointOffset;
     public CapsuleCollider2D mountTrigger;
 
     // Component fields
     public Manager worldManager;
     public Animator legAnimator;
     public Animator mainAnimator;
-    public HitCircleManager hitManager;
+    public HitManager hitManager;
 
     // Start is called before the first frame update
     private void Start()
     {
-        // Initialize footPoint
-        footPointOffset = mountTrigger.offset.y - mountTrigger.bounds.extents.y;
-        footPoint = new Vector2(transform.position.x, transform.position.y + footPointOffset);
-
         // Initialize controls dictionary
         controls = new Dictionary<string, KeyCode>()
         {
@@ -90,6 +84,14 @@ public class Athlete : MonoBehaviour
 
         worldManager = GameObject.FindGameObjectWithTag("World").GetComponent<Manager>();
         rb = GetComponent<Rigidbody2D>();
+
+
+        if (!leftTeam)
+        {
+            // Flip main and leg sprite
+            gameObject.GetComponent<SpriteRenderer>().flipX = true;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().flipX = true;
+        }
     }
 
 
@@ -247,14 +249,17 @@ public class Athlete : MonoBehaviour
                 break;
         }
 
+        if (moveState == MobilityState.Stunned || moveState == MobilityState.Mounted)
+        {
+            hitState = HitState.None;
+            hitManager.StopHitting();
+        }
+
         UpdateAnimator();
     }
 
     private void FixedUpdate()
     {
-        // Update footPoint
-        footPoint = new Vector2(transform.position.x, transform.position.y + footPointOffset);
-
         // Control the running
         if (runPressed == 'R')
             rb.velocity = new Vector2(runSpd, rb.velocity.y);
@@ -329,7 +334,7 @@ public class Athlete : MonoBehaviour
     // Check for enter collisions with the mount trigger
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        // Check for collision with another athlete's hurtbox
+        // Check for collision with an athlete's hurtbox
         if (collider.gameObject.tag == "Athlete" && collider.GetType() == typeof(CapsuleCollider2D))
         {
             // Check if grounded and still
@@ -373,7 +378,7 @@ public class Athlete : MonoBehaviour
     // Check for exit collisions with the mount trigger
     private void OnTriggerExit2D(Collider2D collider)
     {
-        // Check for collision with an Athlete's mount trigger
+        // Check for collision with an athlete's mount trigger
         if (collider.gameObject.tag == "Athlete" && collider.GetType() == typeof(CapsuleCollider2D))
         {
             // Check if currently mounted

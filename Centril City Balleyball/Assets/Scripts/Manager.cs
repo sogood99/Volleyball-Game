@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Manager : MonoBehaviour
 {
-    // If true, this will turn on hitbox sprites
-    public bool debugMode;
-
     // Gather a list of all athletes
     public GameObject[] allAthletes;
 
@@ -26,28 +23,15 @@ public class Manager : MonoBehaviour
         {
             Physics2D.IgnoreCollision(ball.GetComponent<Collider2D>(), allAthletes[i].GetComponent<Collider2D>());
 
-            if (i != 0)
-                Physics2D.IgnoreCollision(allAthletes[0].GetComponent<Collider2D>(), allAthletes[i].GetComponent<Collider2D>());
+            for (int n = 0; n < allAthletes.Length; n++)
+                if (n != i)
+                    Physics2D.IgnoreCollision(allAthletes[n].GetComponent<Collider2D>(), allAthletes[i].GetComponent<Collider2D>());
         }
-
-        Physics.IgnoreLayerCollision(0, 3, true);
-
-        debugMode = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Toggle debug mode with P
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            debugMode = !debugMode;
-
-            GameObject[] debugSprites = GameObject.FindGameObjectsWithTag("Debug Sprite");
-            for (int i = 0; i < debugSprites.Length; i++)
-                debugSprites[i].GetComponent<SpriteRenderer>().enabled = debugMode;
-        }
-
         // I guess this always needs to be updated
         allAthletes = GameObject.FindGameObjectsWithTag("Athlete");
     }
