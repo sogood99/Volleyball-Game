@@ -13,9 +13,6 @@ public class HitCircle : MonoBehaviour
     private float ogRadius;
     private float timer;
 
-    // Other GameObjects
-    public Athlete athlete;
-
 
 
     // Properties
@@ -69,11 +66,5 @@ public class HitCircle : MonoBehaviour
             if (timer > duration)
                 circCollider.radius = ogRadius;
         }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.gameObject.tag == "Ball")
-            athlete.HitTheBall(this);
     }
 }

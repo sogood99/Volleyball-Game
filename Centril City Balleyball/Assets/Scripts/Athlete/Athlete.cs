@@ -66,8 +66,6 @@ public class Athlete : MonoBehaviour
     public CapsuleCollider2D mountTrigger;
 
     // Component fields
-    public Ball ball;
-    public Rigidbody2D ballRb;
     public Manager worldManager;
     public Animator legAnimator;
     public Animator mainAnimator;
@@ -92,8 +90,6 @@ public class Athlete : MonoBehaviour
 
         worldManager = GameObject.FindGameObjectWithTag("World").GetComponent<Manager>();
         rb = GetComponent<Rigidbody2D>();
-        ball = GameObject.FindGameObjectWithTag("Ball").GetComponent<Ball>();
-        ballRb = ball.GetComponent<Rigidbody2D>();
     }
 
 
@@ -321,100 +317,6 @@ public class Athlete : MonoBehaviour
     // -------------------------
     // - - - - - OTHER - - - - -
     // -------------------------
-
-    public virtual void HitTheBall(HitCircle theBox)
-    {
-        // Figure out the direction the ball should be hit
-        int directionX = 1;
-        if (!leftSide)
-            directionX = -1;
-
-        // Calculate income variables
-        Vector2 impactAngle = ballRb.velocity.normalized;
-        float impactMag = ballRb.velocity.magnitude;
-        float magScale = impactMag / ball.maxSpd;
-
-        if (hitState == HitState.Offensive)
-            OffenseHit(directionX, impactAngle, magScale);
-        else if (hitState == HitState.Defensive)
-            DefenseHit(directionX, impactAngle, magScale);
-        else if (hitState == HitState.SpikeWind)
-            BuntHit(directionX, impactAngle, magScale);
-        else if (hitState == HitState.SpikeHit)
-            SpikeHit(directionX, impactAngle, magScale);
-    }
-
-    protected virtual void OffenseHit(int directionX, Vector2 impactAngle, float magScale)
-    {
-        // Initialize ball return variables
-        Vector2 angle = Vector2.zero;
-        Vector2 trajectory = Vector2.zero;
-
-        if (runPressed == 'L')
-            angle = new Vector2(1, 1.7f).normalized;
-        else if (runPressed == 'N')
-            angle = new Vector2(1, 1.2f).normalized;
-        else if (runPressed == 'R')
-            angle = new Vector2(1, .7f).normalized;
-
-        if (hitTimer <= offenseDuration)
-            // Return velocity magnitude ranges from .5 -> .8 of maxSpd
-            trajectory = angle * (ball.maxSpd * .5f) * (1 + (magScale * .3f));
-        else
-            // Return velocity magnitude ranges from .2 -> .4 of maxSpd
-            trajectory = angle * (ball.maxSpd * .2f) * (1 + (magScale * .2f));
-
-        ballRb.velocity = new Vector2(trajectory.x * directionX, trajectory.y);
-    }
-
-    protected virtual void DefenseHit(int directionX, Vector2 impactAngle, float magScale)
-    {
-        // Initialize ball return variables
-        Vector2 angle = Vector2.zero;
-        Vector2 trajectory = Vector2.zero;
-
-        if (runPressed == 'L')
-            angle = new Vector2(-.1f, 1).normalized;
-        else if (runPressed == 'N')
-            angle = new Vector2(0, 1).normalized;
-        else if (runPressed == 'R')
-            angle = new Vector2(.2f, 1).normalized;
-
-        if (hitTimer <= defenseDuration)
-            // Return velocity magnitude ranges from .4 -> .9 of maxSpd
-            trajectory = angle * (ball.maxSpd * .4f) * (1 + (magScale * .5f));
-        else
-            // Return velocity magnitude ranges from .2 -> .5 of maxSpd
-            trajectory = angle * (ball.maxSpd * .2f) * (1 + (magScale * .3f));
-
-        ballRb.velocity = new Vector2(trajectory.x * directionX, trajectory.y);
-    }
-
-    protected virtual void BuntHit(int directionX, Vector2 impactAngle, float magScale)
-    {
-        // Initialize ball return variables
-        Vector2 angle = Vector2.zero;
-        Vector2 trajectory = Vector2.zero;
-
-        angle = Vector2.right.normalized;
-
-        // Return velocity magnitude is .1 of maxSpd
-        trajectory = angle * (ball.maxSpd * .1f);
-        ballRb.velocity = new Vector2(trajectory.x * directionX, trajectory.y);
-    }
-
-    protected virtual void SpikeHit(int directionX, Vector2 impactAngle, float magScale)
-    {
-        // Initialize ball return variables
-        Vector2 angle = Vector2.zero;
-        Vector2 trajectory = Vector2.zero;
-
-        angle = Vector2.right.normalized;
-
-        // Return velocity magnitude is .9 of maxSpd
-        trajectory = angle * (ball.maxSpd * .9f);
-        ballRb.velocity = new Vector2(trajectory.x * directionX, trajectory.y);
-    }
 
 
 

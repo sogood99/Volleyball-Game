@@ -645,6 +645,11 @@ PrefabInstance:
       propertyPath: defGrndRadScale
       value: 1.2
       objectReference: {fileID: 0}
+    - target: {fileID: 6737245550921957564, guid: 7bc14a1c91cf0b74eb3f4a9abe930548,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7bc14a1c91cf0b74eb3f4a9abe930548, type: 3}
 --- !u!850595691 &1149047518

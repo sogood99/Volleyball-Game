@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2222179535693595024}
-  - component: {fileID: 5210047391672757860}
   - component: {fileID: 270450486501355745}
   - component: {fileID: 7511107699207415456}
   m_Layer: 3
@@ -33,27 +32,6 @@ Transform:
   m_Father: {fileID: 932278174106056191}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &5210047391672757860
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 908343147218105759}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &270450486501355745
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -85,7 +63,6 @@ MonoBehaviour:
   radiusScale: 1.3
   duration: 50
   circCollider: {fileID: 270450486501355745}
-  athlete: {fileID: 932278173421129109}
 --- !u!1 &932278173127556011
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,7 +72,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 932278173127556012}
-  - component: {fileID: 4673339802087331741}
   - component: {fileID: 932278173127556013}
   - component: {fileID: 8820518239573614292}
   m_Layer: 3
@@ -119,27 +95,6 @@ Transform:
   m_Father: {fileID: 932278174106056191}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &4673339802087331741
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 932278173127556011}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &932278173127556013
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -171,7 +126,6 @@ MonoBehaviour:
   radiusScale: 1.2
   duration: 60
   circCollider: {fileID: 932278173127556013}
-  athlete: {fileID: 932278173421129109}
 --- !u!1 &932278173421129106
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,8 +327,6 @@ MonoBehaviour:
   footPoint: {x: 0, y: 0}
   footPointOffset: 0
   mountTrigger: {fileID: 7435621264936305945}
-  ball: {fileID: 0}
-  ballRb: {fileID: 0}
   worldManager: {fileID: 0}
   legAnimator: {fileID: 5561066377389309923}
   mainAnimator: {fileID: 932278173421129107}
@@ -388,7 +340,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 932278173552010758}
-  - component: {fileID: 8675606532355594739}
   - component: {fileID: 932278173552010757}
   - component: {fileID: 9216444275031970961}
   m_Layer: 3
@@ -412,27 +363,6 @@ Transform:
   m_Father: {fileID: 932278174106056191}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &8675606532355594739
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 932278173552010755}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &932278173552010757
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -464,7 +394,6 @@ MonoBehaviour:
   radiusScale: 1
   duration: 30
   circCollider: {fileID: 932278173552010757}
-  athlete: {fileID: 932278173421129109}
 --- !u!1 &932278174106056190
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,6 +403,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 932278174106056191}
+  - component: {fileID: 10302156278227360}
   - component: {fileID: 5686140804243847095}
   m_Layer: 3
   m_Name: Hit Circles
@@ -502,6 +432,27 @@ Transform:
   m_Father: {fileID: 932278173421129128}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &10302156278227360
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 932278174106056190}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!114 &5686140804243847095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,7 +482,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 932278174454912769}
-  - component: {fileID: 548752386294471143}
   - component: {fileID: 932278174454912770}
   - component: {fileID: 3289265448473876955}
   m_Layer: 3
@@ -555,27 +505,6 @@ Transform:
   m_Father: {fileID: 932278174106056191}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &548752386294471143
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 932278174454912768}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &932278174454912770
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -607,7 +536,6 @@ MonoBehaviour:
   radiusScale: 1.2
   duration: 60
   circCollider: {fileID: 932278174454912770}
-  athlete: {fileID: 932278173421129109}
 --- !u!1 &2217941027954094869
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,7 +545,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6334559896474144519}
-  - component: {fileID: 6201148273722513904}
   - component: {fileID: 7366906203701630750}
   - component: {fileID: 55644995868394067}
   m_Layer: 3
@@ -641,27 +568,6 @@ Transform:
   m_Father: {fileID: 932278174106056191}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &6201148273722513904
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2217941027954094869}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &7366906203701630750
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -693,7 +599,6 @@ MonoBehaviour:
   radiusScale: 1.3
   duration: 50
   circCollider: {fileID: 7366906203701630750}
-  athlete: {fileID: 932278173421129109}
 --- !u!1 &3638361184555122259
 GameObject:
   m_ObjectHideFlags: 0
@@ -805,7 +710,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8404542379013441991}
-  - component: {fileID: 1425660405739865615}
   - component: {fileID: 378857571570112426}
   - component: {fileID: 6781413909768730933}
   m_Layer: 3
@@ -829,27 +733,6 @@ Transform:
   m_Father: {fileID: 932278174106056191}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &1425660405739865615
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8479085213182831002}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &378857571570112426
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -863,9 +746,9 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.06514263, y: 0}
   serializedVersion: 2
-  m_Radius: 1.33
+  m_Radius: 1.1056201
 --- !u!114 &6781413909768730933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -881,4 +764,3 @@ MonoBehaviour:
   radiusScale: 1
   duration: 10
   circCollider: {fileID: 378857571570112426}
-  athlete: {fileID: 932278173421129109}

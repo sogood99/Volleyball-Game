@@ -68,8 +68,6 @@ public class Ball : MonoBehaviour
         sprite.position = new Vector3(sprite.position.x, sprite.position.y, sprite.position.z - .1f);
     }
 
-
-
     // Deal with collisions
     private void OnCollisionExit2D(Collision2D collision)
     {
