@@ -306,6 +306,7 @@ public class Athlete : MonoBehaviour
 
         legAnimator.SetFloat("xVelocity", rb.velocity.x);
         legAnimator.SetBool("airborne", airborne);
+        legAnimator.SetInteger("hitState", (int)hitState);
         legAnimator.SetBool("mounted", isMounted);
 
         mainAnimator.SetBool("airborne", airborne);

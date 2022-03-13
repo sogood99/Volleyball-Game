@@ -462,7 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radiusScale: 1
-  duration: 20
+  duration: 30
   circCollider: {fileID: 932278173552010757}
   athlete: {fileID: 932278173421129109}
 --- !u!1 &932278174106056190
@@ -879,6 +879,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radiusScale: 1
-  duration: 5
+  duration: 10
   circCollider: {fileID: 378857571570112426}
   athlete: {fileID: 932278173421129109}
