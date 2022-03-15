@@ -170,7 +170,7 @@ public class HitManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.gameObject.tag == "Ball")
+        if (collider.gameObject.tag == "Ball" && !collider.gameObject.GetComponent<Ball>().hitGround)
             HitTheBall(collider.gameObject);
     }
 

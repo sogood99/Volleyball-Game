@@ -178,8 +178,8 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 70
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 40
+  m_AngularDrag: 0
+  m_GravityScale: 16
   m_Material: {fileID: 6200000, guid: 2cd29861d2d920d4ebd31d5c6623406c, type: 2}
   m_Interpolate: 1
   m_SleepingMode: 1
@@ -224,8 +224,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.99728584}
-  m_Size: {x: 1.0447512, y: 2.0537953}
+  m_Offset: {x: 0, y: -1.158577}
+  m_Size: {x: 0.4207853, y: 1.7312131}
   m_Direction: 0
 --- !u!212 &932278173421129108
 SpriteRenderer:
@@ -315,9 +315,9 @@ MonoBehaviour:
   offenseKey: 0
   defenseKey: 0
   runSpd: 15
-  jumpSpd: 40
+  jumpSpd: 34
   leftTeam: 1
-  maxGravScale: 20
+  maxGravScale: 15
   moveState: 0
   hitState: 0
   airborne: 0
@@ -325,6 +325,7 @@ MonoBehaviour:
   serving: 0
   hurtbox: {fileID: 932278173421129110}
   mountTrigger: {fileID: 7435621264936305945}
+  legs: {fileID: 0}
   worldManager: {fileID: 0}
   legAnimator: {fileID: 5561066377389309923}
   mainAnimator: {fileID: 932278173421129107}

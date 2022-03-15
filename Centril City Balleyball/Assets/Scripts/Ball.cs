@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine;
 
 public class Ball : MonoBehaviour
@@ -10,10 +11,14 @@ public class Ball : MonoBehaviour
     public bool hitGround = false;
     private Vector2 direction;
 
-
     // Component variables
     private Rigidbody2D rb;
     private Transform sprite;
+
+    void Ping()
+    {
+        Debug.Log("Ping");
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +73,13 @@ public class Ball : MonoBehaviour
         sprite.position = new Vector3(sprite.position.x, sprite.position.y, sprite.position.z - .1f);
     }
 
+    // Event
+
+    public delegate void BallLanded();
+    public static event BallLanded OnBallLanded;
+
+
+
     // Deal with collisions
     private void OnCollisionExit2D(Collision2D collision)
     {
@@ -85,7 +97,13 @@ public class Ball : MonoBehaviour
         {
             // Set hitGround to true on initial bounce
             if (!hitGround)
+            {
                 hitGround = true;
+
+                // Invoke an event
+                if (OnBallLanded != null)
+                    OnBallLanded();
+            }
             // On second contact, freeze position
             // This prevents infinite bouncing
             else

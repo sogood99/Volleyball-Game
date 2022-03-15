@@ -64,7 +64,8 @@ public class Athlete : MonoBehaviour
     public CapsuleCollider2D mountTrigger;
 
     // Component fields
-    public Manager worldManager;
+    public GameObject legs;
+    public GameManager worldManager;
     public Animator legAnimator;
     public Animator mainAnimator;
     public HitManager hitManager;
@@ -82,9 +83,10 @@ public class Athlete : MonoBehaviour
             { "defense", defenseKey }
         };
 
-        worldManager = GameObject.FindGameObjectWithTag("World").GetComponent<Manager>();
+        worldManager = GameObject.FindGameObjectWithTag("World").GetComponent<GameManager>();
         rb = GetComponent<Rigidbody2D>();
 
+        maxGravScale = rb.gravityScale;
 
         if (!leftTeam)
         {
@@ -358,7 +360,11 @@ public class Athlete : MonoBehaviour
 
                     // Deal with other athlete
                     // THIS MUST BE DONE IN HERE. OnCollision stuff doesn't work
-                    otherAthlete.transform.position = new Vector2(topCenter.x, topCenter.y + otherAthlete.mountTrigger.bounds.extents.y - otherAthlete.mountTrigger.offset.y);
+                    otherAthlete.transform.position = new Vector3(
+                        topCenter.x, 
+                        topCenter.y + otherAthlete.mountTrigger.bounds.extents.y - otherAthlete.mountTrigger.offset.y, 
+                        otherAthlete.transform.position.z
+                        );
                     otherAthlete.moveState = MobilityState.Mounting;
                     otherAthlete.airborne = false;
                     otherAthlete.rb.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -366,9 +372,13 @@ public class Athlete : MonoBehaviour
                     // Swap layers if necessary
                     if (gameObject.layer < otherAthlete.gameObject.layer)
                     {
-                        int tempLayer = gameObject.layer;
-                        gameObject.layer = otherAthlete.gameObject.layer;
-                        otherAthlete.gameObject.layer = tempLayer;
+                        float tempLayer = transform.position.z;
+
+                        transform.position = new Vector3(transform.position.x, transform.position.y, otherAthlete.transform.position.z);
+                        legs.transform.position = new Vector3(legs.transform.position.x, legs.transform.position.y, transform.position.z - .5f);
+
+                        otherAthlete.transform.position = new Vector3(otherAthlete.transform.position.x, otherAthlete.transform.position.y, tempLayer);
+                        otherAthlete.legs.transform.position = new Vector3(otherAthlete.legs.transform.position.x, otherAthlete.legs.transform.position.y, tempLayer - .5f);
                     }
                 }
             }
