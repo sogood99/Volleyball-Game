@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
-public enum GameType
+public enum matchType
 {
     Singles,
     Doubles
@@ -21,6 +21,7 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject[] canvases;
     public TMP_Text leftScoreText;
     public TMP_Text rightScoreText;
     private int leftScore = 0;
@@ -30,8 +31,8 @@ public class GameManager : MonoBehaviour
     public GameObject[] allAthletes;
     public GameObject ball;
 
-    private GameType gameType;
-    private GameState gameState;
+    private matchType matchType;
+    private GameState gameState = GameState.Start;
 
     // Start is called before the first frame update
     void Start()
@@ -45,9 +46,9 @@ public class GameManager : MonoBehaviour
 
         // Determine game type
         if (allAthletes.Length == 2)
-            gameType = GameType.Singles;
+            matchType = matchType.Singles;
         else if (allAthletes.Length == 4)
-            gameType = GameType.Doubles;
+            matchType = matchType.Doubles;
         
         // All athletes and ball should ignore collisions
         for (int i = 0; i < allAthletes.Length; i++)
@@ -58,13 +59,38 @@ public class GameManager : MonoBehaviour
                 if (n != i)
                     Physics2D.IgnoreCollision(allAthletes[n].GetComponent<Collider2D>(), allAthletes[i].GetComponent<Collider2D>());
         }
+
+        // Freeze time
+        Time.timeScale = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // I guess this always needs to be updated
-        allAthletes = GameObject.FindGameObjectsWithTag("Athlete");
+        // Check game state
+        switch (gameState)
+        {
+            case GameState.Start:
+
+                if (Input.anyKeyDown)
+                {
+                    canvases[(int)gameState].SetActive(false);
+                    gameState = GameState.Match;
+                    canvases[(int)gameState].SetActive(true);
+                    Time.timeScale = 1;
+                }
+
+                break;
+
+            case GameState.Match:
+                break;
+
+            case GameState.End:
+                break;
+
+            case GameState.Paused:
+                break;
+        }
     }
 
 
