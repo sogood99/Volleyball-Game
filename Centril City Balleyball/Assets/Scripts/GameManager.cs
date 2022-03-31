@@ -30,19 +30,22 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] allAthletes;
     public GameObject ball;
+    public PauseMenu pauseMenu;
 
     private matchType matchType;
-    private GameState gameState = GameState.Start;
+    public GameState gameState = GameState.Start;
 
     // Start is called before the first frame update
     void Start()
     {
-        // Handle the event
+        // Handle events
         Ball.OnBallLanded += UpdateScore;
+        pauseMenu.resume.onClick.AddListener(delegate { ResumeGame(); });
 
         // Find the ball and athletes
         ball = GameObject.FindGameObjectWithTag("Ball");
         allAthletes = GameObject.FindGameObjectsWithTag("Athlete");
+
 
         // Determine game type
         if (allAthletes.Length == 2)
@@ -72,23 +75,66 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Start:
 
-                if (Input.anyKeyDown)
+                if (Input.GetKeyDown(KeyCode.Return))
                 {
+                    foreach (GameObject athlete in allAthletes)
+                        athlete.GetComponent<Athlete>().controllable = true;
+                    Time.timeScale = 1;
+
                     canvases[(int)gameState].SetActive(false);
                     gameState = GameState.Match;
                     canvases[(int)gameState].SetActive(true);
-                    Time.timeScale = 1;
+
                 }
 
                 break;
 
+
             case GameState.Match:
+
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    foreach (GameObject athlete in allAthletes)
+                        athlete.GetComponent<Athlete>().controllable = false;
+                    Time.timeScale = 0;
+
+                    canvases[(int)gameState].SetActive(false);
+                    gameState = GameState.Paused;
+                    canvases[(int)gameState].SetActive(true);
+
+                    canvases[(int)gameState].GetComponentInChildren<Button>().Select();
+                }
+                else if (leftScore >= 7 || rightScore >= 7)
+                {
+                    foreach (GameObject athlete in allAthletes)
+                        athlete.GetComponent<Athlete>().controllable = false;
+                    Time.timeScale = 0;
+
+                    canvases[(int)gameState].SetActive(false);
+                    gameState = GameState.End;
+                    canvases[(int)gameState].SetActive(true);
+                }
+
                 break;
 
             case GameState.End:
+
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    canvases[(int)gameState].SetActive(false);
+                    gameState = GameState.Paused;
+                    canvases[(int)gameState].SetActive(true);
+                }
+
                 break;
 
             case GameState.Paused:
+
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    ResumeGame();
+                }
+
                 break;
         }
     }
@@ -108,5 +154,16 @@ public class GameManager : MonoBehaviour
             leftScore++;
             leftScoreText.text = leftScore.ToString();
         }
+    }
+
+    private void ResumeGame()
+    {
+        foreach (GameObject athlete in allAthletes)
+            athlete.GetComponent<Athlete>().controllable = true;
+        Time.timeScale = 1;
+
+        canvases[(int)gameState].SetActive(false);
+        gameState = GameState.Match;
+        canvases[(int)gameState].SetActive(true);
     }
 }
