@@ -13,6 +13,7 @@ public class MainMenu : MonoBehaviour
     public Button freePlay2v2;
     public Button settings;
     public Button credits;
+    public Button quit;
 
     private Button[] buttons;
     private bool noneSelected = true;
@@ -21,13 +22,14 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         // Initialize button array
-        buttons = new Button[6] {
+        buttons = new Button[7] {
             campaign1v1,
             campaign2v2,
             freePlay1v1,
             freePlay2v2,
             settings,
-            credits
+            credits,
+            quit
         };
 
         // Manage button presses
@@ -37,6 +39,7 @@ public class MainMenu : MonoBehaviour
         freePlay2v2.onClick.AddListener(delegate { ChangeScene(2); }); // Change to free play scene when clicked
         settings.onClick.AddListener(delegate { ChangeScene(3); }); // Change to settings scene when clicked
         credits.onClick.AddListener(delegate { ChangeScene(4); }); // Change to credits scene when clicked
+        quit.onClick.AddListener(delegate { Application.Quit(); }); // Close the app when clicked
     }
 
     // Update is called once per frame

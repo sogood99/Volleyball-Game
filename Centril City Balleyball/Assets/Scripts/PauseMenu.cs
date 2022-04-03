@@ -12,6 +12,7 @@ public class PauseMenu : MonoBehaviour
     public Button restart;
     public Button quitMatch;
     public Button quitToMenu;
+
     public Button exitGame;
 
     private Button[] buttons;

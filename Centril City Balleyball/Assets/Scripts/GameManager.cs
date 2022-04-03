@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using TMPro;
+using UnityEngine.Events; // Use events
+using UnityEngine.UI; // Use UI
+using TMPro;  // Use text mesh pro
 
 public enum matchType
 {
@@ -21,9 +21,12 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    public EndMenu endMenu;
     public GameObject[] canvases;
     public TMP_Text leftScoreText;
     public TMP_Text rightScoreText;
+
+    private int winScore = 7;
     private int leftScore = 0;
     private int rightScore = 0;
 
@@ -39,13 +42,23 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Handle events
-        Ball.OnBallLanded += UpdateScore;
+        Ball.OnBallLanded += IncrementScore;
         pauseMenu.resume.onClick.AddListener(delegate { ResumeGame(); });
 
         // Find the ball and athletes
-        ball = GameObject.FindGameObjectWithTag("Ball");
+        if (ball == null)
+            ball = GameObject.FindGameObjectWithTag("Ball");
         allAthletes = GameObject.FindGameObjectsWithTag("Athlete");
 
+        // Reset game on rematch
+        endMenu.rematch.onClick.AddListener(delegate {
+            ChangeScore('L', -leftScore);
+            ChangeScore('R', -rightScore);
+
+            canvases[(int)gameState].SetActive(false);
+            gameState = GameState.Start;
+            canvases[(int)gameState].SetActive(true);
+        });
 
         // Determine game type
         if (allAthletes.Length == 2)
@@ -104,7 +117,7 @@ public class GameManager : MonoBehaviour
 
                     canvases[(int)gameState].GetComponentInChildren<Button>().Select();
                 }
-                else if (leftScore >= 7 || rightScore >= 7)
+                else if (leftScore >= winScore || rightScore >= winScore)
                 {
                     foreach (GameObject athlete in allAthletes)
                         athlete.GetComponent<Athlete>().controllable = false;
@@ -113,18 +126,15 @@ public class GameManager : MonoBehaviour
                     canvases[(int)gameState].SetActive(false);
                     gameState = GameState.End;
                     canvases[(int)gameState].SetActive(true);
-                }
 
+                    if (leftScore > rightScore)
+                        endMenu.result.text = "Left team wins!";
+                    else
+                        endMenu.result.text = "Right team wins!";
+                }
                 break;
 
             case GameState.End:
-
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    canvases[(int)gameState].SetActive(false);
-                    gameState = GameState.Paused;
-                    canvases[(int)gameState].SetActive(true);
-                }
 
                 break;
 
@@ -141,18 +151,27 @@ public class GameManager : MonoBehaviour
 
 
     // Event handler
-    private void UpdateScore()
+    private void IncrementScore()
     {
-        // Right side TECHNICALLY has an advantage, here
+        // Right side TECHNICALLY has an advantage here
         if (ball.transform.position.x < 0)
-        {
-            rightScore++;
-            rightScoreText.text = rightScore.ToString();
-        }
+            ChangeScore('L', 1);
         else
+            ChangeScore('R', 1);
+    }
+
+    // Changes the value of a team's score, and updates the GUI
+    private void ChangeScore(char team, int n)
+    {
+        if (team == 'L')
         {
-            leftScore++;
+            leftScore += n;
             leftScoreText.text = leftScore.ToString();
+        }
+        else if (team == 'R')
+        {
+            rightScore += n;
+            rightScoreText.text = rightScore.ToString();
         }
     }
 
