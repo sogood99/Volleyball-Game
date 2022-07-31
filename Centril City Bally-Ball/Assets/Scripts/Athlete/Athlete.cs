@@ -36,7 +36,7 @@ public class Athlete : MonoBehaviour
 
     // Control Fields
     public bool controllable = false;
-    private Dictionary<string, KeyCode> controls;
+    private Dictionary<string, KeyCode> playerControls;
     public KeyCode leftKey;
     public KeyCode rightKey;
     public KeyCode jumpKey;
@@ -94,7 +94,7 @@ public class Athlete : MonoBehaviour
     private void Start()
     {
         // Initialize controls dictionary
-        controls = new Dictionary<string, KeyCode>()
+        playerControls = new Dictionary<string, KeyCode>()
         {
             { "left",    leftKey    },
             { "right",   rightKey   },
@@ -139,350 +139,45 @@ public class Athlete : MonoBehaviour
 
         if (controllable)
         {
-            // Handle mobility state
-            switch (moveState)
-            {
-                case MobilityState.Free:
+            HandleMoveState(
+                Input.GetKey(playerControls["right"]),
+                Input.GetKey(playerControls["left"]),
+                Input.GetKeyDown(playerControls["jump"])
+                );
 
-                    // Check which run buttons are pressed
-                    if (Input.GetKey(controls["right"]))
-                    {
-                        // In the case of both keys pressed on the same frame, default to right
-                        runPressed = 'R';
-                    }
-                    else if (Input.GetKey(controls["left"]))
-                    {
-                        // Go left
-                        runPressed = 'L';
-                    }
-                    else
-                    {
-                        // Go nowhere
-                        runPressed = 'N';
-
-                        legAnimState = LegAnimState.Idle;
-                    }
-
-                    // Check if jump is initiated
-                    if (Input.GetKeyDown(controls["jump"]) && !airborne)
-                    {
-                        jumpPressed = true;
-                    }
-
-
-                    break;
-
-
-                case MobilityState.Mounting:
-
-                    runPressed = 'N';
-
-                    if (Input.GetKeyDown(controls["jump"]))
-                    {
-                        mountJump = true;
-                        jumpPressed = true;
-                    }
-
-                    break;
-
-
-
-                case MobilityState.Mounted:
-
-                    runPressed = 'N';
-                    break;
-
-
-
-                case MobilityState.Stunned:
-
-                    if (!airborne)
-                        moveState = MobilityState.Free;
-
-                    break;
-
-
-
-                case MobilityState.Taunting:
-                    break;
-            }
-
-            // Handle hit state
-            switch (hitState)
-            {
-                case HitState.None:
-
-                    if (Input.GetKeyDown(controls["offense"]))
-                    {
-                        hitState = HitState.Offensive;
-                        hitManager.MakeAHit(hitState);
-                    }
-                    else if (Input.GetKeyDown(controls["defense"]))
-                    {
-                        hitState = HitState.Defensive;
-                        hitManager.MakeAHit(hitState);
-                    }
-                    else if (airborne && Input.GetKeyDown(controls["jump"]))
-                    {
-                        hitState = HitState.SpikeWind;
-                        hitManager.MakeAHit(hitState);
-
-                        rb.AddForce(new Vector2(0, 1000), ForceMode2D.Impulse);
-                    }
-
-                    break;
-
-
-
-                case HitState.Offensive:
-
-                    hitTimer++;
-
-                    if (hitTimer > offenseDuration && !Input.GetKey(controls["offense"]))
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-
-                    break;
-
-
-
-                case HitState.Defensive:
-
-                    hitTimer++;
-
-                    if (hitTimer > defenseDuration && !Input.GetKey(controls["defense"]))
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-
-                    break;
-
-
-
-                case HitState.SpikeWind:
-
-                    hitTimer++;
-
-                    if (!airborne)
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-                    else if (hitTimer > spikeWindDuration && !Input.GetKey(controls["jump"]))
-                    {
-                        hitState = HitState.SpikeHit;
-                        hitManager.MakeAHit(hitState);
-                        hitTimer = 0;
-                    }
-
-                    break;
-
-                case HitState.SpikeHit:
-
-                    hitTimer++;
-
-                    if (!airborne || hitTimer > spikeHitDuration)
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-
-                    break;
-            }
-
-            if (moveState == MobilityState.Stunned || moveState == MobilityState.Mounted)
-            {
-                hitState = HitState.None;
-                hitManager.StopHitting();
-            }
-
-            UpdateAnimator();
+            HandleHitState(
+                Input.GetKey(playerControls["offense"]),
+                Input.GetKey(playerControls["defense"]),
+                Input.GetKeyDown(playerControls["jump"]),
+                Input.GetKey(playerControls["jump"])
+                );
         }
-
         else if (aI)
         {
             Think(GameObject.FindWithTag("Ball").GetComponent<Ball>());
 
-            // Handle mobility state
-            switch (moveState)
-            {
-                case MobilityState.Free:
+            HandleMoveState(
+                aiControls["right"],
+                aiControls["left"],
+                aiControls["jump"]
+                );
 
-                    // Check which run buttons are pressed
-                    if (aiControls["right"])
-                    {
-                        // In the case of both keys pressed on the same frame, default to right
-                        runPressed = 'R';
-                    }
-                    else if (aiControls["left"])
-                    {
-                        // Go left
-                        runPressed = 'L';
-                    }
-                    else
-                    {
-                        // Go nowhere
-                        runPressed = 'N';
-
-                        legAnimState = LegAnimState.Idle;
-                    }
-
-                    // Check if jump is initiated
-                    if (aiControls["jump"] && !airborne)
-                    {
-                        jumpPressed = true;
-                    }
-
-
-                    break;
-
-
-                case MobilityState.Mounting:
-
-                    runPressed = 'N';
-
-                    if (aiControls["jump"])
-                    {
-                        mountJump = true;
-                        jumpPressed = true;
-                    }
-
-                    break;
-
-
-
-                case MobilityState.Mounted:
-
-                    runPressed = 'N';
-                    break;
-
-
-
-                case MobilityState.Stunned:
-
-                    if (!airborne)
-                        moveState = MobilityState.Free;
-
-                    break;
-
-
-
-                case MobilityState.Taunting:
-                    break;
-            }
-
-            // Handle hit state
-            switch (hitState)
-            {
-                case HitState.None:
-
-                    if (aiControls["offense"])
-                    {
-                        hitState = HitState.Offensive;
-                        hitManager.MakeAHit(hitState);
-                    }
-                    else if (aiControls["defense"])
-                    {
-                        hitState = HitState.Defensive;
-                        hitManager.MakeAHit(hitState);
-                    }
-                    else if (airborne && aiControls["jump"])
-                    {
-                        hitState = HitState.SpikeWind;
-                        hitManager.MakeAHit(hitState);
-
-                        rb.AddForce(new Vector2(0, 1000), ForceMode2D.Impulse);
-                    }
-
-                    break;
-
-
-
-                case HitState.Offensive:
-
-                    hitTimer++;
-
-                    if (hitTimer > offenseDuration && !aiControls["offense"])
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-
-                    break;
-
-
-
-                case HitState.Defensive:
-
-                    hitTimer++;
-
-                    if (hitTimer > defenseDuration && !aiControls["defense"])
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-
-                    break;
-
-
-
-                case HitState.SpikeWind:
-
-                    hitTimer++;
-
-                    if (!airborne)
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-                    else if (hitTimer > spikeWindDuration && !aiControls["jump"])
-                    {
-                        hitState = HitState.SpikeHit;
-                        hitManager.MakeAHit(hitState);
-                        hitTimer = 0;
-                    }
-
-                    break;
-
-                case HitState.SpikeHit:
-
-                    hitTimer++;
-
-                    if (!airborne || hitTimer > spikeHitDuration)
-                    {
-                        hitState = HitState.None;
-                        hitManager.StopHitting();
-                        hitTimer = 0;
-                    }
-
-                    break;
-            }
-
-            if (moveState == MobilityState.Stunned || moveState == MobilityState.Mounted)
-            {
-                hitState = HitState.None;
-                hitManager.StopHitting();
-            }
-
-            UpdateAnimator();
-
+            HandleHitState(
+                aiControls["offense"],
+                aiControls["defense"],
+                aiControls["jump"],
+                aiControls["jump"]
+                );
 
             // Reset all AI controls to false
             // Create a temporary list because modifying the controls thing sucks
-            List<string> ctrlNames = new List<string>(aiControls.Keys);
-            foreach (string name in ctrlNames)
+            foreach (string name in new List<string>(aiControls.Keys))
                 aiControls[name] = false;
         }
+
+        UpdateAnimator();
+
+        Debug.Log("Airborne: " + airborne);
     }
 
     private void FixedUpdate()
@@ -525,6 +220,7 @@ public class Athlete : MonoBehaviour
             }
             else
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpd);
+
             jumpPressed = false;
         }
 
@@ -590,6 +286,183 @@ public class Athlete : MonoBehaviour
 
 
 
+    // --------------------------
+    // - - - - - STATES - - - - -
+    // --------------------------
+
+    private void HandleMoveState(bool rightInput, bool leftInput, bool firstJumpInput)
+    {
+        switch (moveState)
+        {
+            case MobilityState.Free:
+
+                // Check which run buttons are pressed
+                if (rightInput)
+                {
+                    // In the case of both keys pressed on the same frame, default to right
+                    runPressed = 'R';
+                }
+                else if (leftInput)
+                {
+                    // Go left
+                    runPressed = 'L';
+                }
+                else
+                {
+                    // Go nowhere
+                    runPressed = 'N';
+
+                    legAnimState = LegAnimState.Idle;
+                }
+
+                // Check if jump is initiated
+                if (firstJumpInput && !airborne)
+                {
+                    jumpPressed = true;
+                }
+
+
+                break;
+
+
+            case MobilityState.Mounting:
+
+                runPressed = 'N';
+
+                if (firstJumpInput)
+                {
+                    mountJump = true;
+                    jumpPressed = true;
+                }
+
+                break;
+
+
+
+            case MobilityState.Mounted:
+
+                runPressed = 'N';
+
+                break;
+
+
+
+            case MobilityState.Stunned:
+
+                if (!airborne)
+                    moveState = MobilityState.Free;
+
+                break;
+
+
+
+            case MobilityState.Taunting:
+
+                break;
+        }
+    }
+    private void HandleHitState(bool offenseInput, bool defenseInput, bool firstJumpInput, bool jumpInput)
+    {
+        switch (hitState)
+        {
+            case HitState.None:
+
+                if (offenseInput)
+                {
+                    hitState = HitState.Offensive;
+                    hitManager.MakeAHit(hitState);
+                }
+                else if (defenseInput)
+                {
+                    hitState = HitState.Defensive;
+                    hitManager.MakeAHit(hitState);
+                }
+                else if (airborne && firstJumpInput)
+                {
+                    hitState = HitState.SpikeWind;
+                    hitManager.MakeAHit(hitState);
+
+                    rb.AddForce(new Vector2(0, 1000), ForceMode2D.Impulse);
+                }
+
+                break;
+
+
+
+            case HitState.Offensive:
+
+                hitTimer++;
+
+                if (hitTimer > offenseDuration && !offenseInput)
+                {
+                    hitState = HitState.None;
+                    hitManager.StopHitting();
+                    hitTimer = 0;
+                }
+
+                break;
+
+
+
+            case HitState.Defensive:
+
+                hitTimer++;
+
+                if (hitTimer > defenseDuration && !defenseInput)
+                {
+                    hitState = HitState.None;
+                    hitManager.StopHitting();
+                    hitTimer = 0;
+                }
+
+                break;
+
+
+
+            case HitState.SpikeWind:
+
+                hitTimer++;
+
+                if (!airborne)
+                {
+                    hitState = HitState.None;
+                    hitManager.StopHitting();
+                    hitTimer = 0;
+                }
+                else if (hitTimer > spikeWindDuration && !jumpInput)
+                {
+                    hitState = HitState.SpikeHit;
+                    hitManager.MakeAHit(hitState);
+                    hitTimer = 0;
+                }
+
+                break;
+
+            case HitState.SpikeHit:
+
+                hitTimer++;
+
+                if (!airborne || hitTimer > spikeHitDuration)
+                {
+                    hitState = HitState.None;
+                    hitManager.StopHitting();
+                    hitTimer = 0;
+                }
+
+                break;
+        }
+
+        if (moveState == MobilityState.Stunned || moveState == MobilityState.Mounted)
+        {
+            hitState = HitState.None;
+            hitManager.StopHitting();
+        }
+    }
+
+
+
+
+
     // -------------------------
     // - - - - - OTHER - - - - -
     // -------------------------
@@ -635,18 +508,17 @@ public class Athlete : MonoBehaviour
             // Debug.Log("Predicted Ball X Position: " + predBallPosX);
             // Debug.Log("Current Position: " + ballPos + " | Predicted Distance: " + predBallDist + " | Predicted Position: " + predBallPos);
 
-            // This is currently broken, not sure why
-            GameObject debug = GameObject.Find("Debug");
+            GameObject debug = GameObject.Find("Thought Dots");
             for (int i = 0; i < debug.transform.childCount; i++)
             {
                 // Calculate time interval
-                float timeInterval = predBallTime * ((1 + i) / (float)debug.transform.childCount);
+                float predTimeInterval = predBallTime * ((1 + i) / (float)debug.transform.childCount);
                 // Debug.Log("Time interval " + i + ": " + timeInterval);
             
                 // Place the dots
                 debug.transform.GetChild(i).position = new Vector3(
-                    ballPos.x + (predBallDistX * timeInterval),
-                    ballPos.y + (predBallDistY * timeInterval),
+                    ballPos.x + (ballVel.x * predTimeInterval),
+                    ballPos.y + ( (ballVel.y * predTimeInterval) + (.5f * acceleration.y * Mathf.Pow(predTimeInterval, 2)) ),
                     0
                     );
             }
@@ -672,7 +544,7 @@ public class Athlete : MonoBehaviour
     private void DecideMovement(float finalBallPosX, float offGrndHitPosX)
     {
         Vector2 hitCirclePos = transform.position + hitManager.GetHitOffset(predictedHit);
-        Debug.Log("Athlete Position: " + transform.position + " | HitCircle Offset: " + hitManager.GetHitOffset(predictedHit) + " | HitCircle Position: " + hitCirclePos);
+        //Debug.Log("Athlete Position: " + transform.position + " | HitCircle Offset: " + hitManager.GetHitOffset(predictedHit) + " | HitCircle Position: " + hitCirclePos);
 
         if (finalBallPosX < offGrndHitPosX - hitManager.GetHitCircle(predictedHit).OgRadius)
         {
@@ -719,6 +591,10 @@ public class Athlete : MonoBehaviour
                 predictedHit = HitType.DefenseGround;
         }
     }
+
+
+
+
 
     // ------------------------------
     // - - - - - COLLISIONS - - - - -
@@ -813,7 +689,7 @@ public class Athlete : MonoBehaviour
         }
     }
 
-    // Check for enter collisions with the hurtbox
+    // Check for exit collisions with the hurtbox
     private void OnCollisionExit2D(Collision2D collision)
     {
         Collider2D collider = collision.collider;
