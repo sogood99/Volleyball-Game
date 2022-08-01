@@ -478,7 +478,8 @@ public class Athlete : MonoBehaviour
             // Givens
             Vector2 ballPos = ball.transform.position;
             Vector2 ballVel = ball.GetComponent<Rigidbody2D>().velocity;
-            Vector2 acceleration = Physics.gravity;
+            Vector2 acceleration = new Vector2(Physics.gravity.x, Physics.gravity.y * ball.GetComponent<Rigidbody2D>().gravityScale);
+            float ballDrag = ball.GetComponent<Rigidbody2D>().drag;
             Vector2 hitPos = transform.position + hitManager.GetHitOffset(predictedHit);
 
             // Calculate predicted final velocity
@@ -495,7 +496,7 @@ public class Athlete : MonoBehaviour
             // Horizontal:   v = d / t   ->   d = v * t
             float predBallDistX = ballVel.x * predBallTime;
             // Vertical:   d = (Vi*t) + (.5*a*(t^2))
-            float predBallDistY = (ballVel.y * predBallTime) + (.5f * acceleration.y * Mathf.Pow(predBallTime, 2));
+            float predBallDistY = (ballVel.y * predBallTime) + (.5f * (acceleration.y - ballDrag) * Mathf.Pow(predBallTime, 2));
             Vector2 predBallDist = new Vector2(predBallDistX, predBallDistY);
 
             // Calculate predicted position
@@ -518,7 +519,7 @@ public class Athlete : MonoBehaviour
                 // Place the dots
                 debug.transform.GetChild(i).position = new Vector3(
                     ballPos.x + (ballVel.x * predTimeInterval),
-                    ballPos.y + ( (ballVel.y * predTimeInterval) + (.5f * acceleration.y * Mathf.Pow(predTimeInterval, 2)) ),
+                    ballPos.y + ( (ballVel.y * predTimeInterval) + (.5f * (acceleration.y - ballDrag) * Mathf.Pow(predTimeInterval, 2)) ),
                     0
                     );
             }
