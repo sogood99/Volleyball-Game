@@ -59,6 +59,7 @@ public class Athlete : MonoBehaviour
     private int defenseDuration = 60;
     private int spikeWindDuration = 5;
     private int spikeHitDuration = 20;
+    private bool didASpike = false;
 
     // Logic fields
     public float runSpd;
@@ -176,8 +177,6 @@ public class Athlete : MonoBehaviour
         }
 
         UpdateAnimator();
-
-        Debug.Log("Airborne: " + airborne);
     }
 
     private void FixedUpdate()
@@ -206,9 +205,8 @@ public class Athlete : MonoBehaviour
         // Move slower in the air
         if (airborne)
             rb.velocity = new Vector2(rb.velocity.x * .9f, rb.velocity.y);
-
         // Upwards velocity for the jump
-        if (jumpPressed)
+        else if (jumpPressed)
         {
             moveState = MobilityState.Free;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -222,6 +220,8 @@ public class Athlete : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpd);
 
             jumpPressed = false;
+
+            Debug.Log("Jumped");
         }
 
         // Give the athlete a "flea jump" by having them hang in the air
@@ -377,7 +377,7 @@ public class Athlete : MonoBehaviour
                     hitState = HitState.Defensive;
                     hitManager.MakeAHit(hitState);
                 }
-                else if (airborne && firstJumpInput)
+                else if (airborne && firstJumpInput && !didASpike)
                 {
                     hitState = HitState.SpikeWind;
                     hitManager.MakeAHit(hitState);
@@ -434,6 +434,8 @@ public class Athlete : MonoBehaviour
                     hitState = HitState.SpikeHit;
                     hitManager.MakeAHit(hitState);
                     hitTimer = 0;
+
+                    didASpike = true;
                 }
 
                 break;
@@ -635,6 +637,7 @@ public class Athlete : MonoBehaviour
                         );
                     otherAthlete.moveState = MobilityState.Mounting;
                     otherAthlete.airborne = false;
+                    otherAthlete.didASpike = false;
                     otherAthlete.rb.constraints = RigidbodyConstraints2D.FreezeAll;
 
                     // Swap layers if necessary
@@ -687,6 +690,7 @@ public class Athlete : MonoBehaviour
         if (collider.gameObject.tag == "Floor")
         {
             airborne = false;
+            didASpike = false;
         }
     }
 
