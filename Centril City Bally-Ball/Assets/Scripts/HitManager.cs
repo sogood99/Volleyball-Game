@@ -10,6 +10,7 @@ public enum HitType
     DefenseAir,
     SpikeWind,
     SpikeHit,
+    Serve,
     None
 }
 
@@ -22,6 +23,7 @@ public class HitManager : MonoBehaviour
     public CircleCollider2D defAir;
     public CircleCollider2D spkWind;
     public CircleCollider2D spkHit;
+    public CircleCollider2D serve;
 
     // Dictionary
     private Dictionary<HitType, HitCircle> circles;
@@ -44,7 +46,8 @@ public class HitManager : MonoBehaviour
             { HitType.DefenseGround, defGrnd.GetComponent<HitCircle>() },
             { HitType.DefenseAir,    defAir.GetComponent<HitCircle>()  },
             { HitType.SpikeWind,     spkWind.GetComponent<HitCircle>() },
-            { HitType.SpikeHit,      spkHit.GetComponent<HitCircle>()  }
+            { HitType.SpikeHit,      spkHit.GetComponent<HitCircle>()  },
+            { HitType.Serve,         serve.GetComponent<HitCircle>()   }
         };
 
         athleteRb = athlete.gameObject.GetComponent<Rigidbody2D>();
@@ -100,6 +103,14 @@ public class HitManager : MonoBehaviour
         }
     }
 
+
+
+
+
+    // ----------------------------------
+    // - - - - - HIT MANAGEMENT - - - - -
+    // ----------------------------------
+
     // Makes a hit circle based on hit state
     public void MakeAHit(HitState hitState)
     {
@@ -136,10 +147,18 @@ public class HitManager : MonoBehaviour
 
 
             case HitState.SpikeHit:
-
+                // Is the activeHit change necessary?
                 circles[activeHit].IsActive = false;
                 activeHit = HitType.SpikeHit;
                 circles[activeHit].IsActive = true;
+
+                break;
+
+
+
+            case HitState.Serve:
+
+                activeHit = HitType.Serve;
 
                 break;
         }
@@ -165,13 +184,6 @@ public class HitManager : MonoBehaviour
         activeHit = type;
         circles[activeHit].IsActive = true;
         circles[activeHit].Timer = tempTimer;
-    }
-
-
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.gameObject.tag == "Ball" && !collider.gameObject.GetComponent<Ball>().hitGround)
-            HitTheBall(collider.gameObject);
     }
 
     public virtual void HitTheBall(GameObject ball)
@@ -208,9 +220,29 @@ public class HitManager : MonoBehaviour
             case HitType.SpikeHit:
                 SpikeHit(ball, impactAngle, magScale);
                 break;
+
+            case HitType.Serve:
+                ServeHit(ball);
+                break;
+        }
+
+        if (ballScript.ballState == BallState.Held)
+        {
+            ballScript.ballState = BallState.Free;
+            ballRb.constraints = RigidbodyConstraints2D.None;
+            ballRb.gravityScale = ballScript.gravScale;
         }
     }
 
+
+
+
+
+    // ------------------------------------
+    // - - - - - HIT TYPE METHODS - - - - -
+    // ------------------------------------
+
+    // A medium, forward-leaning hit meant to return the ball
     protected virtual void OffenseHit(GameObject ball, Vector2 impactAngle, float magScale)
     {
         // Initialize variables
@@ -243,6 +275,7 @@ public class HitManager : MonoBehaviour
         ballRb.velocity = trajectory;
     }
 
+    // A weaker hit that pops the ball up
     protected virtual void DefenseHit(GameObject ball, Vector2 impactAngle, float magScale)
     {
         // Initialize variables
@@ -276,6 +309,7 @@ public class HitManager : MonoBehaviour
         ballRb.velocity = trajectory;
     }
 
+    // A very weak hit that just taps the ball forward
     protected virtual void BuntHit(GameObject ball, Vector2 impactAngle, float magScale)
     {
         // Initialize variables
@@ -297,6 +331,7 @@ public class HitManager : MonoBehaviour
         ballRb.velocity = trajectory;
     }
 
+    // A strong hit that sends the ball forward and down
     protected virtual void SpikeHit(GameObject ball, Vector2 impactAngle, float magScale)
     {
         // Initialize variables
@@ -318,11 +353,54 @@ public class HitManager : MonoBehaviour
         ballRb.velocity = trajectory;
     }
 
-    /// <summary>
-    /// Returns the offset of the circle collider's center.
-    /// </summary>
-    /// <param name="type">The type of hit.</param>
-    /// <returns></returns>
+    // A medium hit similar to an offense
+    // Only used when holding the ball
+    protected virtual void ServeHit(GameObject ball)
+    {
+        // Initialize variables
+        Ball ballScript = ball.GetComponent<Ball>();
+        Rigidbody2D ballRb = ball.GetComponent<Rigidbody2D>();
+        Vector2 angle = Vector2.zero;
+        Vector2 trajectory = Vector2.zero;
+
+        // Hit at a 45 degree angle
+        angle = new Vector2(1, 1).normalized;
+
+        // Hit ball at 80% strength
+        trajectory = angle * (ballScript.maxSpd * .7f);
+
+        // Flip direction if necessary
+        if (!athlete.leftTeam)
+            trajectory.x *= -1;
+
+        // Update ball velocity
+        ballRb.velocity = trajectory;
+    }
+
+
+
+
+
+    // ------------------------------
+    // - - - - - COLLISIONS - - - - -
+    // ------------------------------
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        // I think other players can hit the ball out of your hand
+        if (collider.gameObject.tag == "Ball" && collider.gameObject.GetComponent<Ball>().ballState != BallState.Grounded)
+            HitTheBall(collider.gameObject);
+    }
+
+
+
+
+
+    // -------------------------------
+    // - - - - - INFORMATION - - - - -
+    // -------------------------------
+
+    // Returns the offset of the circle collider's center.
     public Vector3 GetHitOffset(HitType type)
     {
         if (type == HitType.OffenseGround)
@@ -337,15 +415,13 @@ public class HitManager : MonoBehaviour
             return spkWind.transform.localPosition;
         else if (type == HitType.SpikeHit)
             return spkHit.transform.localPosition;
+        else if (type == HitType.Serve)
+            return serve.transform.localPosition;
         else
             return Vector3.zero;
     }
 
-    /// <summary>
-    /// Returns a hit circle.
-    /// </summary>
-    /// <param name="type">The type of hit.</param>
-    /// <returns></returns>
+    // Returns a hit circle.
     public HitCircle GetHitCircle(HitType type)
     {
         return circles[type];

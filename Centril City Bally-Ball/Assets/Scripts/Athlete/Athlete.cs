@@ -17,7 +17,8 @@ public enum HitState
     Offensive,
     Defensive,
     SpikeWind,
-    SpikeHit
+    SpikeHit,
+    Serve
 }
 
 public enum LegAnimState
@@ -55,10 +56,6 @@ public class Athlete : MonoBehaviour
 
     // Hit Fields
     private int hitTimer = 0;
-    private int offenseDuration = 60;
-    private int defenseDuration = 60;
-    private int spikeWindDuration = 5;
-    private int spikeHitDuration = 20;
     private bool didASpike = false;
 
     // Logic fields
@@ -220,8 +217,6 @@ public class Athlete : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpd);
 
             jumpPressed = false;
-
-            Debug.Log("Jumped");
         }
 
         // Give the athlete a "flea jump" by having them hang in the air
@@ -367,22 +362,38 @@ public class Athlete : MonoBehaviour
         {
             case HitState.None:
 
-                if (offenseInput)
+                if (serving)
                 {
-                    hitState = HitState.Offensive;
-                    hitManager.MakeAHit(hitState);
+                    if (airborne && firstJumpInput)
+                    {
+                        hitState = HitState.Serve;
+                        hitManager.MakeAHit(hitState);
+                    }
+                    else if (offenseInput || defenseInput)
+                    {
+                        hitState = HitState.Serve;
+                        hitManager.MakeAHit(hitState);
+                    }
                 }
-                else if (defenseInput)
+                else
                 {
-                    hitState = HitState.Defensive;
-                    hitManager.MakeAHit(hitState);
-                }
-                else if (airborne && firstJumpInput && !didASpike)
-                {
-                    hitState = HitState.SpikeWind;
-                    hitManager.MakeAHit(hitState);
+                    if (offenseInput)
+                    {
+                        hitState = HitState.Offensive;
+                        hitManager.MakeAHit(hitState);
+                    }
+                    else if (defenseInput)
+                    {
+                        hitState = HitState.Defensive;
+                        hitManager.MakeAHit(hitState);
+                    }
+                    else if (airborne && firstJumpInput && !didASpike)
+                    {
+                        hitState = HitState.SpikeWind;
+                        hitManager.MakeAHit(hitState);
 
-                    rb.AddForce(new Vector2(0, 1000), ForceMode2D.Impulse);
+                        rb.AddForce(new Vector2(0, 1000), ForceMode2D.Impulse);
+                    }
                 }
 
                 break;
@@ -393,7 +404,7 @@ public class Athlete : MonoBehaviour
 
                 hitTimer++;
 
-                if (hitTimer > offenseDuration && !offenseInput)
+                if (hitTimer > hitManager.GetHitCircle(HitType.OffenseGround).duration && !offenseInput)
                 {
                     hitState = HitState.None;
                     hitManager.StopHitting();
@@ -408,7 +419,7 @@ public class Athlete : MonoBehaviour
 
                 hitTimer++;
 
-                if (hitTimer > defenseDuration && !defenseInput)
+                if (hitTimer > hitManager.GetHitCircle(HitType.DefenseGround).duration && !defenseInput)
                 {
                     hitState = HitState.None;
                     hitManager.StopHitting();
@@ -429,7 +440,7 @@ public class Athlete : MonoBehaviour
                     hitManager.StopHitting();
                     hitTimer = 0;
                 }
-                else if (hitTimer > spikeWindDuration && !jumpInput)
+                else if (hitTimer > hitManager.GetHitCircle(HitType.SpikeWind).duration && !jumpInput)
                 {
                     hitState = HitState.SpikeHit;
                     hitManager.MakeAHit(hitState);
@@ -444,11 +455,25 @@ public class Athlete : MonoBehaviour
 
                 hitTimer++;
 
-                if (!airborne || hitTimer > spikeHitDuration)
+                if (!airborne || hitTimer > hitManager.GetHitCircle(HitType.SpikeHit).duration)
                 {
                     hitState = HitState.None;
                     hitManager.StopHitting();
                     hitTimer = 0;
+                }
+
+                break;
+
+            case HitState.Serve:
+
+                hitTimer++;
+
+                if (hitTimer > hitManager.GetHitCircle(HitType.Serve).duration)
+                {
+                    hitState = HitState.None;
+                    hitManager.StopHitting();
+                    hitTimer = 0;
+                    serving = false;
                 }
 
                 break;
@@ -471,7 +496,7 @@ public class Athlete : MonoBehaviour
 
     private void Think(Ball ball)
     {
-        if (!ball.hitGround)
+        if (ball.ballState == BallState.Free)
         {
             // STEP 1 : Predict the ball's trajectory using physics
             // -------------------------------------------------

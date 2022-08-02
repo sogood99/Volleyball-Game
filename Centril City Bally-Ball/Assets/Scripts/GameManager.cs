@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour
     private int leftScore = 0;
     private int rightScore = 0;
 
+    private float ballGroundedTimer = 0;
+    public float ballGroundedDuration;
+
 
     public GameObject[] allAthletes;
     public GameObject ball;
@@ -58,6 +61,10 @@ public class GameManager : MonoBehaviour
             canvases[(int)gameState].SetActive(false);
             gameState = GameState.Start;
             canvases[(int)gameState].SetActive(true);
+
+            // Assign me as the server
+            GameObject.Find("Left Player").GetComponent<Athlete>().serving = true;
+            ball.GetComponent<Ball>().beholder = GameObject.Find("Left Player").GetComponent<Athlete>();
         });
 
         // Determine game type
@@ -65,7 +72,11 @@ public class GameManager : MonoBehaviour
             matchType = matchType.Singles;
         else if (allAthletes.Length == 4)
             matchType = matchType.Doubles;
-        
+
+        // Assign me as the server
+        GameObject.Find("Left Player").GetComponent<Athlete>().serving = true;
+        ball.GetComponent<Ball>().beholder = GameObject.Find("Left Player").GetComponent<Athlete>();
+
         // All athletes and ball should ignore collisions
         for (int i = 0; i < allAthletes.Length; i++)
         {
@@ -109,11 +120,7 @@ public class GameManager : MonoBehaviour
 
             case GameState.Match:
 
-                if (Input.GetKeyDown(KeyCode.B))
-                {
-                    ball.GetComponent<Ball>().Respawn();
-                }
-                else if (Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyDown(KeyCode.Escape))
                 {
                     foreach (GameObject athlete in allAthletes)
                         athlete.GetComponent<Athlete>().controllable = false;
@@ -163,9 +170,34 @@ public class GameManager : MonoBehaviour
     {
         // Left side TECHNICALLY has an advantage here
         if (ball.transform.position.x > 0)
+        {
             ChangeScore('L', 1);
+
+            foreach (GameObject athlete in allAthletes)
+            {
+                if (!athlete.GetComponent<Athlete>().leftTeam)
+                {
+                    athlete.GetComponent<Athlete>().serving = true;
+                    ball.GetComponent<Ball>().Respawn(athlete.GetComponent<Athlete>());
+                    break;
+                }
+            }
+
+        }
         else
+        {
             ChangeScore('R', 1);
+
+            foreach (GameObject athlete in allAthletes)
+            {
+                if (athlete.GetComponent<Athlete>().leftTeam)
+                {
+                    athlete.GetComponent<Athlete>().serving = true;
+                    ball.GetComponent<Ball>().Respawn(athlete.GetComponent<Athlete>());
+                    break;
+                }
+            }
+        }
     }
 
     // Changes the value of a team's score, and updates the GUI
